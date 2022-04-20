@@ -1,6 +1,7 @@
+import React from 'react';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
-import React from 'react';
+
 import { web3 } from './data/web3/web3'
 
 function App() {

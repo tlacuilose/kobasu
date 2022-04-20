@@ -8,14 +8,14 @@ A web3 ridesharing service.
 
 # Ethereum environment
 
-Install ganache cli
+Install truffle, this is a tool for uploading Contracts and starting a eth local node.
 
 ```bash
-npm install ganache --global
+npm install -g truffle
 ```
 
-Run ganache
+Run truffle
 
 ```bash
-ganache
+truffle develop
 ```
