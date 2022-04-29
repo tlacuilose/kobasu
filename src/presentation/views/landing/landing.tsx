@@ -1,9 +1,10 @@
 import React from "react";
-import { CssBaseline, Grid, Paper} from "@mui/material";
+import { CssBaseline, Grid } from "@mui/material";
 
 import DriverLogin from "./components/driverlogin";
-import PassengerLogin from "./components/passengerlogin";
 import PageHalf from "./components/pagehalf";
+import PassengerLogin from "./components/passengerlogin";
+
 
 const LandingView = () => {
   return (
