@@ -7,7 +7,7 @@ const PassengerHomeView = () => {
     <React.Fragment>
       <Stack spacing={2}>
         <Typography variant="h4" component="div">
-          Passenger home.
+          Available trips
         </Typography>
         <PassengerOffersList />
       </Stack>

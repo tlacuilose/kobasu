@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Grid, Paper, SvgIcon, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { padding } from "@mui/system";
 
 export interface LoginSectionProps {
   icon: React.ElementType<any>,
@@ -13,10 +14,12 @@ const LoginSection = (props: LoginSectionProps) => {
     <Paper variant="outlined" square
       sx={{
         height: {
-          xs: "50vh",
-          sm: "100vh"
+          md: "100vh"
         },
-        padding: "50px"
+        padding: {
+          md: "50px",
+          xs: "32px"
+        }
       }}
     >
       <Grid
@@ -27,7 +30,7 @@ const LoginSection = (props: LoginSectionProps) => {
         justifyItems="center"
       >
         <Grid item xs={3}>
-          <SvgIcon component={props.icon} inheritViewBox sx={{ fontSize: "50vh" }} />
+          <SvgIcon component={props.icon} inheritViewBox sx={{ fontSize: "40vh" }} />
         </Grid>
         <Grid item xs={3}>
           <Typography variant="h3" component="div" align="center">

@@ -41,7 +41,7 @@ const PassengerOffersList = () => {
               <TableCell align="right">{offer.appointmentTime}</TableCell>
               <TableCell align="right">
                 <Link to={`/passenger/bid/${offer.tripId}`}>
-                  <Button>Make offer</Button>
+                  <Button>Make bid</Button>
                 </Link>
               </TableCell>
             </TableRow>

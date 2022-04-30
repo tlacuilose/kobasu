@@ -6,7 +6,7 @@ const DriverHomeView = () => {
   return (
     <React.Fragment>
       <Typography variant="h4" component="div">
-        Driver home
+        Offer a trip
       </Typography>
       <form>
         <Grid container spacing={2} sx={{ marginTop: "16px "}}>
