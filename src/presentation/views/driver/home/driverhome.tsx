@@ -10,7 +10,7 @@ const DriverHomeView = () => {
       </Typography>
       <form>
         <Grid container spacing={2} sx={{ marginTop: "16px "}}>
-          <Grid item md={8} xs={12}>
+          <Grid item md={10} xs={12}>
             <Stack spacing={2}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="offer-from">From:</InputLabel>
@@ -79,7 +79,7 @@ const DriverHomeView = () => {
               </FormControl>
             </Stack>
           </Grid>
-          <Grid item md={4} xs={12}>
+          <Grid item md={2} xs={12}>
             <FormControl fullWidth>
               <Link to="/driver/waitlist">
                 <Button variant="outlined">Make offer</Button>

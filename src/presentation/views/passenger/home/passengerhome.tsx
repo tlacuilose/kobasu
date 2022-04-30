@@ -1,10 +1,17 @@
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
+import React from "react";
+import PassengerOffersList from "./components/passengerofferslist";
 
 const PassengerHomeView = () => {
   return (
-    <Typography variant="body1" component="div">
-      Passenger home.
-    </Typography>
+    <React.Fragment>
+      <Stack spacing={2}>
+        <Typography variant="h4" component="div">
+          Passenger home.
+        </Typography>
+        <PassengerOffersList />
+      </Stack>
+    </React.Fragment>
   )
 }
 

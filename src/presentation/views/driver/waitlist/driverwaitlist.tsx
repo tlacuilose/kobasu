@@ -9,7 +9,7 @@ import TitleWithLeftItem from "../../../global/components/titlewithleftitem";
 const DriverWaitListView = () => {
   return (
     <React.Fragment>
-      <Stack spacing={4} sx={{ marginTop: "16px"}}>
+      <Stack spacing={4} sx={{ marginY: "16px"}}>
         <Typography variant="h4" component="div">
           Waitlist for trip: 0x4338498934433823238
         </Typography>

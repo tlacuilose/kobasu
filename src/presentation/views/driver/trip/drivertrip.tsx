@@ -1,12 +1,11 @@
 import { Button, Stack, Typography } from "@mui/material";
-import React from "react";
 import { Link } from "react-router-dom";
 import TitleWithLeftItem from "../../../global/components/titlewithleftitem";
 import AcceptedBidsList from "../waitlist/components/acceptedbidslist";
 
-const DriverTripStartedView = () => {
+const DriverTripView = () => {
   return (
-    <Stack spacing={2} sx={{ marginTop: "16px"}}>
+    <Stack spacing={2} sx={{ marginY: "16px"}}>
       <Typography variant="h4" component="div">
         Trip 0x4338498934433823238 has started.
       </Typography>
@@ -20,4 +19,4 @@ const DriverTripStartedView = () => {
   );
 }
 
-export default DriverTripStartedView;
+export default DriverTripView;
