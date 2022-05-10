@@ -13,7 +13,7 @@ const LoggedInLayout = (props: { user: string }) => {
               Kobasu | { props.user }
             </Typography>
             <Link to="/">
-              <Button color="inherit">Logout</Button>
+              <Button sx={{color:"white"}}>Logout</Button>
             </Link>
           </Toolbar>
         </AppBar>
