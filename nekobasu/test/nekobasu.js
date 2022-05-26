@@ -4,10 +4,13 @@ const truffleAssert = require('truffle-assertions');
 contract("Nekobasu", accounts => {
   var driver = accounts[0];
   var passenger = accounts[1];
+  let nekobasu;
+
+  beforeEach('setup contract', async function () {
+    nekobasu = await Nekobasu.new();
+  });
 
   it("should not offer trip with no seats available", async () => {
-    const nekobasu = await Nekobasu.deployed();
-
     var info = "New trip";
     var seats = 0;
 
@@ -18,8 +21,6 @@ contract("Nekobasu", accounts => {
   });
 
   it("should offer a new trip", async () => {
-    const nekobasu = await Nekobasu.deployed();
-
     var info = "New trip"
     var seats = 1
     let tx = await nekobasu.offerTrip(info, seats, {from: driver});
@@ -30,18 +31,22 @@ contract("Nekobasu", accounts => {
   });
 
   it("should require only one trip offered at the time", async () => {
-    const nekobasu = await Nekobasu.deployed();
+    var info1 = "New trip"
+    var seats1 = 1
+    await nekobasu.offerTrip(info1, seats1, {from: driver});
 
-    var info = "Another trip"
-    var seats = 1
+    var info2 = "Another trip"
+    var seats2 = 1
     await truffleAssert.reverts(
-      nekobasu.offerTrip(info, seats, {from: driver}),
+      nekobasu.offerTrip(info2, seats2, {from: driver}),
       "driver has trip"
     );
   });
 
   it("should not allow driver to bid on its offers.", async () => {
-    const nekobasu = await Nekobasu.deployed();
+    var info = "New trip"
+    var seats = 1
+    await nekobasu.offerTrip(info, seats, {from: driver});
 
     var bid = 234;
     await truffleAssert.reverts(
@@ -77,7 +82,9 @@ contract("Nekobasu", accounts => {
   });
 
   it("should allow a passenger to bid in a trip.", async () => {
-    const nekobasu = await Nekobasu.deployed();
+    var info = "New trip"
+    var seats = 1
+    await nekobasu.offerTrip(info, seats, {from: driver});
 
     const bid = 200;
     var tripId = 1;
