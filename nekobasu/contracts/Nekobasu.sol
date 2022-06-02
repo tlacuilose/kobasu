@@ -2,11 +2,13 @@
 pragma solidity >=0.8.0;
 
 contract Nekobasu {
+    uint tripFee = 30;
 
     event NewTripOffer(uint tripId, Trip trip, address driver);
     event NewTripBid(uint tripId, uint bidId, Bid bid, address passenger);
     event SeatOccupied(uint tripId, uint8 seats);
     event WithdrawBid(uint tripId, uint bidId, address passenger);
+    event StartedTrip(uint tripId);
 
     struct Trip {
         address driver;
@@ -26,10 +28,14 @@ contract Nekobasu {
     Bid[] public bids;
 
     mapping(address => uint) driverToTripId;
+    mapping(address => uint) driverToPool;
     mapping(address => uint) passengerToBidId;
 
     function offerTrip(string calldata info, uint8 seats) public {
         address driver = msg.sender;
+
+        require (driver.balance > tripFee, "cant pay trip fee");
+
         require (seats > 0, "needs seats");
         require (driverToTripId[driver] == 0, "driver has trip");
 
@@ -39,6 +45,10 @@ contract Nekobasu {
         uint tripId = trips.length;
 
         driverToTripId[driver] = tripId;
+
+        // Transactions
+        // driver.tripFee -> contract
+        driverToPool[driver] = tripFee;
 
         emit NewTripOffer(tripId, trip, driver);
     }
@@ -63,6 +73,9 @@ contract Nekobasu {
 
         passengerToBidId[passenger] = bidId;
 
+        // Transactions
+        // passenger.amount -> contract
+
         emit NewTripBid(tripId, bidId, bid, passenger);
     }
 
@@ -84,6 +97,9 @@ contract Nekobasu {
         trip.seats--;
         trips[bid.tripId-1] = trip;
 
+        // Transactions
+        driverToPool[trip.driver] += bid.amount;
+
         bid.accepted = true;
         bids[bidId-1] = bid;
 
@@ -102,7 +118,26 @@ contract Nekobasu {
 
         passengerToBidId[passenger] = 0;
 
+        // Transactions
+        // contract -> passenger.amount
+
         emit WithdrawBid(bid.tripId, bidId, passenger);
+    }
+
+    function startTrip() public {
+        address driver = msg.sender;
+        uint tripId = driverToTripId[driver];
+
+        require (tripId != 0, "driver has no trip");
+        require (driverToPool[driver] != tripFee, "trip has no passengers");
+
+        driverToTripId[driver] = 0;
+
+        // Transactions
+        // pool -> driver
+        driverToPool[driver] = 0;
+
+        emit StartedTrip(tripId);
     }
 
     /*
