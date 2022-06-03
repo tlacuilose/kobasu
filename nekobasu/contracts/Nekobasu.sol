@@ -9,6 +9,7 @@ contract Nekobasu {
     event SeatOccupied(uint tripId, uint8 seats);
     event WithdrawBid(uint tripId, uint bidId, address passenger);
     event StartedTrip(uint tripId);
+    event CancelledTrip(uint tripId);
 
     struct Trip {
         address driver;
@@ -131,6 +132,11 @@ contract Nekobasu {
         require (tripId != 0, "driver has no trip");
         require (driverToPool[driver] != tripFee, "trip has no passengers");
 
+        // TODO: Check that the trip is on time.
+
+        Trip memory trip = trips[tripId-1];
+        trip.started = true;
+        trips[tripId-1] = trip;
         driverToTripId[driver] = 0;
 
         // Transactions
@@ -138,6 +144,22 @@ contract Nekobasu {
         driverToPool[driver] = 0;
 
         emit StartedTrip(tripId);
+    }
+
+    function cancelTrip() public {
+        address driver = msg.sender;
+        uint tripId = driverToTripId[driver];
+
+        require (tripId != 0, "driver has no trip");
+        require (driverToPool[driver] == tripFee, "trip already has passengers");
+
+        driverToTripId[driver] = 0;
+
+        // Transactions 
+        // Return fee to driver?
+        driverToPool[driver] = 0;
+
+        emit CancelledTrip(tripId);
     }
 
     /*

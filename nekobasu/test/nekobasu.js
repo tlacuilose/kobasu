@@ -12,7 +12,6 @@ contract("Nekobasu", accounts => {
   beforeEach('setup contract', async function () {
     nekobasu = await Nekobasu.new();
   });
-  /*
 
   // Offer trip
 
@@ -135,7 +134,7 @@ contract("Nekobasu", accounts => {
 
     var bid2 = 200;
 
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       nekobasu.makeBid(bid2, tripId, {from: otherPassenger}),
       "no more seats"
     );
@@ -240,7 +239,7 @@ contract("Nekobasu", accounts => {
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       nekobasu.acceptBid(otherPassenger, {from: driver}),
       "no more seats"
     );
@@ -249,7 +248,7 @@ contract("Nekobasu", accounts => {
   // Withdraw bid
 
   it("should not allow passenger to withdraw an inexistent bid", async () => {
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       nekobasu.withdrawBid({from: passenger}),
       "passenger has no bid"
     );
@@ -273,7 +272,7 @@ contract("Nekobasu", accounts => {
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       nekobasu.withdrawBid({from: passenger}),
       "bid has been accepted"
     );
@@ -311,8 +310,8 @@ contract("Nekobasu", accounts => {
   // Start trip
 
   it("should not allow a driver to start an unexistent trip", async () => {
-    truffleAssert.reverts(
-      nekobasu.startTrip(),
+    await truffleAssert.reverts(
+      nekobasu.startTrip({from: driver}),
       "driver has no trip"
     );
   });
@@ -321,14 +320,16 @@ contract("Nekobasu", accounts => {
     var info = "New trip";
     var seats = 1;
 
-    await nekobasu.offerTrip(info, seats, {from: driver});
+    let tx = await nekobasu.offerTrip(info, seats, {from: driver});
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      return ev.driver.toString() === driver;
+    });
 
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       nekobasu.startTrip({from: driver}),
       "trip has no passengers"
     );
   });
-  */
 
   it("should allow a driver to start a trip with at least a passenger", async () => {
     var info = "New trip";
@@ -354,6 +355,59 @@ contract("Nekobasu", accounts => {
     });
   });
 
+  // Cancel trip
+
+  it("should not allow a driver to cancel an unexistent trip", async () => {
+    await truffleAssert.reverts(
+      nekobasu.cancelTrip({from: driver}),
+      "driver has no trip"
+    );
+  });
+
+  it("should not allow a driver to cancel a trip when they already accepted bids", async () => {
+    let info = "New Trip";
+    let seats = 2;
+
+    let tx = await nekobasu.offerTrip(info, seats, {from: driver});
+    let tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+
+    let amount = 200;
+    await nekobasu.makeBid(amount, tripId, {from: passenger});
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    await truffleAssert.reverts(
+      nekobasu.cancelTrip({from: driver}),
+      "trip already has passengers"
+    );
+  });
+  
+  it("should allow a driver to cancel a trip when they have no accepted bids", async () => {
+    let info = "New Trip";
+    let seats = 2;
+
+    let tx = await nekobasu.offerTrip(info, seats, {from: driver});
+    let tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+
+    let amount = 200;
+    await nekobasu.makeBid(amount, tripId, {from: passenger});
+
+    let tx2 = await nekobasu.cancelTrip({from: driver});
+    truffleAssert.eventEmitted(tx2, "CancelledTrip", (ev) => {
+      return ev.tripId.toString() === tripId.toString();
+    });
+
+  });
 
   // TODO: Check that all transactions are made.
 
