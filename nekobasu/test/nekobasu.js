@@ -485,4 +485,32 @@ contract("Nekobasu", accounts => {
     assert(desiredPayment);
   });
 
+  it("should refund the bid amount when withdrawing a bid", async () => {
+    let tripFee = await nekobasu.getTripFee();
+
+    let txt = await nekobasu.offerTrip("New Trip", 2, 200, {from: driver, value: tripFee});
+    let tripId = 0;
+    let cost = 0;
+    truffleAssert.eventEmitted(txt, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      cost = ev.cost;
+      return ev.driver.toString() === driver;
+    });
+
+    let passengerBalance = await web3.eth.getBalance(passenger);
+    let tx = await nekobasu.makeBid(tripId, {from: passenger, value: cost});
+    let passengerBalanceAfter = await web3.eth.getBalance(passenger);
+
+    let desiredPayment = await checkPayment(passengerBalance, passengerBalanceAfter, tx, cost);
+    assert(desiredPayment);
+
+    passengerBalance = await web3.eth.getBalance(passenger);
+    tx = await nekobasu.withdrawBid({from: passenger});
+    passengerBalanceAfter = await web3.eth.getBalance(passenger);
+
+    desiredPayment = await checkPayment(passengerBalance, passengerBalanceAfter, tx, (-cost.toNumber()).toString());
+    assert(desiredPayment);
+
+  });
+
 });

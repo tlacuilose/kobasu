@@ -114,7 +114,9 @@ contract Nekobasu {
     }
 
     function withdrawBid() public {
-        address passenger = msg.sender;
+        // THIS FUNCTION PAYS BACK THE BID TO THE PASSENGER
+
+        address payable passenger = payable(msg.sender);
         uint bidId = passengerToBidId[passenger];
 
         require (bidId != 0, "passenger has no bid");
@@ -126,7 +128,7 @@ contract Nekobasu {
         passengerToBidId[passenger] = 0;
 
         // Transactions
-        // contract -> passenger.amount
+        passenger.transfer(bid.amount);
 
         emit WithdrawBid(bid.tripId, bidId, passenger);
     }
