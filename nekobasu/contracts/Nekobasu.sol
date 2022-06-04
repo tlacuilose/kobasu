@@ -114,8 +114,6 @@ contract Nekobasu {
     }
 
     function withdrawBid() public {
-        // THIS FUNCTION PAYS BACK THE BID TO THE PASSENGER
-
         address payable passenger = payable(msg.sender);
         uint bidId = passengerToBidId[passenger];
 
@@ -134,7 +132,7 @@ contract Nekobasu {
     }
 
     function startTrip() public {
-        address driver = msg.sender;
+        address payable driver = payable(msg.sender);
         uint tripId = driverToTripId[driver];
 
         require (tripId != 0, "driver has no trip");
@@ -150,6 +148,7 @@ contract Nekobasu {
 
         // Transactions
         // pool -> driver
+        driver.transfer(driverToPool[driver]);
         driverToPool[driver] = 0;
 
         emit StartedTrip(tripId);
@@ -165,25 +164,18 @@ contract Nekobasu {
         driverToTripId[driver] = 0;
 
         // Transactions 
-        // Return fee to driver?
+        // TripFee is not returned, driver should not cancel trip.
         driverToPool[driver] = 0;
+
 
         emit CancelledTrip(tripId);
     }
 
     /*
-    FIXME: Choose when to withdraw money.
-    Set a pool amount. driverPool += bid.amount;
-    On start get money from pool
-    On cancell remove pool, return
-    How to return from pool to persons. Apply a penalty for bid.
-    Driver pays to make ando ffer which should be taken from statted.
-    Driver is meant to start trip.
-    TODO: Implement withdrawal
-    function withdrawBid(uint passenger) public {
-        require (passengerToBidId[passenger] != 0, "no bid withdrawal")
-
-    }
-   */
+    TODO: Rules should be explicit on frontend, for driver and for passenger.
+    Example cant withdraw bid when it has been accepted.
+	Cancel incurss on a tripFee.
+    Cannot cancel a trip if it has passengers.
+    */
 
 }

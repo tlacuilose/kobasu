@@ -435,6 +435,7 @@ contract("Nekobasu", accounts => {
 
   });
 
+
   // Transactions
 
   const checkPayment = async (previousBalance, afterBalance, tx, payed) => {
@@ -455,7 +456,6 @@ contract("Nekobasu", accounts => {
 
   it("should discount a tripFee from driver when they offer a new trip", async () => {
     let driverBalance = await web3.eth.getBalance(driver);
-    let tripFee = await nekobasu.getTripFee();
 
     let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
 
@@ -466,8 +466,6 @@ contract("Nekobasu", accounts => {
   });
 
   it("should discount bid amount when making a bid", async () => {
-    let tripFee = await nekobasu.getTripFee();
-
     let txt = await nekobasu.offerTrip("New Trip", 2, 200, {from: driver, value: tripFee});
     let tripId = 0;
     let cost = 0;
@@ -486,8 +484,6 @@ contract("Nekobasu", accounts => {
   });
 
   it("should refund the bid amount when withdrawing a bid", async () => {
-    let tripFee = await nekobasu.getTripFee();
-
     let txt = await nekobasu.offerTrip("New Trip", 2, 200, {from: driver, value: tripFee});
     let tripId = 0;
     let cost = 0;
@@ -510,7 +506,69 @@ contract("Nekobasu", accounts => {
 
     desiredPayment = await checkPayment(passengerBalance, passengerBalanceAfter, tx, (-cost.toNumber()).toString());
     assert(desiredPayment);
+  });
 
+  it("should not refund a tripFee to driver when they cancel a trip", async () => {
+    let driverBalance = await web3.eth.getBalance(driver);
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+    let driverBalanceAfter = await web3.eth.getBalance(driver);
+
+    driverBalance = await web3.eth.getBalance(driver);
+    tx = await nekobasu.cancelTrip({from: driver});
+    driverBalanceAfter = await web3.eth.getBalance(driver);
+
+    let desiredPayment =  await checkPayment(driverBalance, driverBalanceAfter, tx, "0");
+    assert(desiredPayment);
+  });
+
+  it("should pay the driver all bids and refund tripFee when starting a trip", async () => {
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+    var tripId;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    let bid1 = 200;
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid1});
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    let bid2 = 300;
+    await nekobasu.makeBid(tripId, {from: otherPassenger, value: bid2});
+
+    await nekobasu.acceptBid(otherPassenger, {from: driver});
+
+    let driverBalance = await web3.eth.getBalance(driver);
+    tx = await nekobasu.startTrip({from: driver});
+    let driverBalanceAfter = await web3.eth.getBalance(driver);
+
+    let desiredPayment = await checkPayment(driverBalance, driverBalanceAfter, tx, (-(tripFee.toNumber() + bid1 + bid2)).toString());
+    assert(desiredPayment);
+  });
+
+  it("should pay the driver all accepted bids and refund tripFee when starting a trip", async () => {
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+    var tripId;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    let bid1 = 200;
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid1});
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    let bid2 = 300;
+    await nekobasu.makeBid(tripId, {from: otherPassenger, value: bid2});
+
+    let driverBalance = await web3.eth.getBalance(driver);
+    tx = await nekobasu.startTrip({from: driver});
+    let driverBalanceAfter = await web3.eth.getBalance(driver);
+
+    let desiredPayment = await checkPayment(driverBalance, driverBalanceAfter, tx, (-(tripFee.toNumber() + bid1)).toString()); // Not bid2
+    assert(desiredPayment);
   });
 
 });
