@@ -69,20 +69,6 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow passenger (not driver) to bid more than its balance.", async () => {
-    const nekobasu = await Nekobasu.deployed();
-
-    const passengerBalance = await web3.eth.getBalance(passenger);
-
-    var bid = passengerBalance + 1;
-    var tripId = 2;
-
-    await truffleAssert.reverts(
-      nekobasu.makeBid(bid, tripId, {from: passenger}),
-      "insufficient funds"
-    );
-  });
-
   it("should not allow passenger (not driver) to bid in an unexistent trip.", async () => {
     const nekobasu = await Nekobasu.deployed();
 
@@ -90,7 +76,7 @@ contract("Nekobasu", accounts => {
     var tripId = 2;
 
     await truffleAssert.reverts(
-      nekobasu.makeBid(bid, tripId, {from: passenger}),
+      nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()}),
       "trip not exist"
     );
   });
@@ -109,7 +95,7 @@ contract("Nekobasu", accounts => {
     var bid = 200;
     var tripId = 1;
 
-    let tx = await nekobasu.makeBid(bid, tripId, {from: passenger});
+    let tx = await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     truffleAssert.eventEmitted(tx, "NewTripBid", (ev) => {
       return ev.tripId.toString() === tripId.toString() && ev.bid.amount.toString() === bid.toString() && ev.passenger === passenger;
@@ -119,7 +105,7 @@ contract("Nekobasu", accounts => {
     tripId = 2;
 
     await truffleAssert.reverts(
-      nekobasu.makeBid(bid, tripId, {from: passenger}),
+      nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()}),
       "passenger has bid"
     );
   });
@@ -138,15 +124,35 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    await nekobasu.makeBid(bid, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
     
     await nekobasu.acceptBid(passenger, {from: driver});
 
     var bid2 = 200;
 
     await truffleAssert.reverts(
-      nekobasu.makeBid(bid2, tripId, {from: otherPassenger}),
+      nekobasu.makeBid(tripId, {from: otherPassenger, value: bid2.toString()}),
       "no more seats"
+    );
+  });
+
+  it("should not allow a passenger to bid less than the cost of a trip.", async () => {
+    var info = "New trip";
+    var seats = 1;
+    var cost = 200;
+
+    let tx = await nekobasu.offerTrip(info, seats, cost, {from: driver, value: tripFee});
+    let tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    const bid = 100;
+
+    await truffleAssert.reverts(
+      nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()}),
+      "insufficient funds"
     );
   });
 
@@ -159,7 +165,7 @@ contract("Nekobasu", accounts => {
     const bid = 200;
     var tripId = 1;
 
-    let tx = await nekobasu.makeBid(bid, tripId, {from: passenger});
+    let tx = await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     truffleAssert.eventEmitted(tx, "NewTripBid", (ev) => {
       return ev.tripId.toString() === tripId.toString() && ev.bid.amount.toString() === bid.toString() && ev.passenger === passenger;
@@ -201,7 +207,7 @@ contract("Nekobasu", accounts => {
 
     var bid = 200;
 
-    await nekobasu.makeBid(bid, tripIdOther, {from: passenger});
+    await nekobasu.makeBid(tripIdOther, {from: passenger, value: bid.toString()});
 
     await truffleAssert.reverts(
       nekobasu.acceptBid(passenger, {from: driver}),
@@ -223,7 +229,7 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    await nekobasu.makeBid(bid, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     let tx2 = await nekobasu.acceptBid(passenger, {from: driver});
 
@@ -246,10 +252,10 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    await nekobasu.makeBid(bid, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     var bid2 = 200;
-    await nekobasu.makeBid(bid2, tripId, {from: otherPassenger});
+    await nekobasu.makeBid(tripId, {from: otherPassenger, value: bid2.toString()});
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
@@ -283,7 +289,7 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    await nekobasu.makeBid(bid, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
@@ -308,7 +314,7 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    let tx2 = await nekobasu.makeBid(bid, tripId, {from: passenger});
+    let tx2 = await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     var bidId = 0;
     truffleAssert.eventEmitted(tx2, "NewTripBid", (ev) => {
@@ -362,7 +368,7 @@ contract("Nekobasu", accounts => {
     });
 
     var bid = 200;
-    await nekobasu.makeBid(bid, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
@@ -396,7 +402,7 @@ contract("Nekobasu", accounts => {
 
 
     let amount = 200;
-    await nekobasu.makeBid(amount, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: amount.toString()});
 
     await nekobasu.acceptBid(passenger, {from: driver});
 
@@ -420,7 +426,7 @@ contract("Nekobasu", accounts => {
 
 
     let amount = 200;
-    await nekobasu.makeBid(amount, tripId, {from: passenger});
+    await nekobasu.makeBid(tripId, {from: passenger, value: amount.toString()});
 
     let tx2 = await nekobasu.cancelTrip({from: driver});
     truffleAssert.eventEmitted(tx2, "CancelledTrip", (ev) => {
