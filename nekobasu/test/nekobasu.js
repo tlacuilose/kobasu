@@ -2,16 +2,17 @@ const Nekobasu = artifacts.require("Nekobasu")
 const truffleAssert = require('truffle-assertions');
 
 contract("Nekobasu", accounts => {
-  var driver = accounts[0];
-  var otherDriver = accounts[2];
-  var passenger = accounts[1];
-  var otherPassenger = accounts[3];
+  var driver = accounts[1];
+  var otherDriver = accounts[3];
+  var passenger = accounts[2];
+  var otherPassenger = accounts[4];
 
   let nekobasu;
 
   beforeEach('setup contract', async function () {
     nekobasu = await Nekobasu.new();
   });
+  /*
 
   // Offer trip
 
@@ -408,7 +409,56 @@ contract("Nekobasu", accounts => {
     });
 
   });
+  */
 
-  // TODO: Check that all transactions are made.
+  // Transactions
+
+  const checkPayment = async (previousBalance, afterBalance, tx, payed) => {
+    let previous = BigInt(previousBalance);
+    let after = BigInt(afterBalance);
+
+    let gasUsed = BigInt(tx.receipt.gasUsed);
+
+    let transaction = await web3.eth.getTransaction(tx.tx);
+    let gasPrice = BigInt(transaction.gasPrice);
+
+    let amountPayed = BigInt(payed);
+
+    let totalPayed = gasPrice * gasUsed + amountPayed;
+
+    return after == (previous - totalPayed);
+  }
+
+  it("should discount a tripFee from driver when they offer a new trip", async () => {
+    let driverBalance = await web3.eth.getBalance(driver);
+    let tripFee = await nekobasu.getTripFee();
+
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+
+    let driverBalanceAfter = await web3.eth.getBalance(driver);
+
+    let desiredPayment =  await checkPayment(driverBalance, driverBalanceAfter, tx, tripFee);
+    assert(desiredPayment);
+  });
+
+  it("should discount bid amount when making a bid", async () => {
+    let tripFee = await nekobasu.getTripFee();
+
+    let txt = await nekobasu.offerTrip("New Trip", 2, 200, {from: driver, value: tripFee});
+    let tripId = 0;
+    let cost = 0;
+    truffleAssert.eventEmitted(txt, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      cost = ev.cost;
+      return ev.driver.toString() === driver;
+    });
+
+    let passengerBalance = await web3.eth.getBalance(passenger);
+    let tx = await nekobasu.makeBid(tripId, {from: passenger, value: cost});
+    let passengerBalanceAfter = await web3.eth.getBalance(passenger);
+
+    let desiredPayment = await checkPayment(passengerBalance, passengerBalanceAfter, tx, cost);
+    assert(desiredPayment);
+  });
 
 });

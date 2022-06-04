@@ -4,7 +4,11 @@ pragma solidity >=0.8.0;
 contract Nekobasu {
     uint tripFee = 30;
 
-    event NewTripOffer(uint tripId, Trip trip, address driver);
+    function getTripFee() public view returns (uint) {
+        return tripFee;
+    }
+
+    event NewTripOffer(uint tripId, Trip trip, uint cost, address driver);
     event NewTripBid(uint tripId, uint bidId, Bid bid, address passenger);
     event SeatOccupied(uint tripId, uint8 seats);
     event WithdrawBid(uint tripId, uint bidId, address passenger);
@@ -15,6 +19,7 @@ contract Nekobasu {
         address driver;
         string info;
         uint8 seats;
+        uint cost;
         bool started;
     }
 
@@ -32,15 +37,15 @@ contract Nekobasu {
     mapping(address => uint) driverToPool;
     mapping(address => uint) passengerToBidId;
 
-    function offerTrip(string calldata info, uint8 seats) public {
+    function offerTrip(string calldata info, uint8 seats, uint cost) public payable {
         address driver = msg.sender;
 
-        require (driver.balance > tripFee, "cant pay trip fee");
+        require (msg.value == tripFee, "cant pay trip fee");
 
         require (seats > 0, "needs seats");
         require (driverToTripId[driver] == 0, "driver has trip");
 
-        Trip memory trip = Trip(driver, info, seats, false);
+        Trip memory trip = Trip(driver, info, seats, cost, false);
         trips.push(trip);
 
         uint tripId = trips.length;
@@ -48,21 +53,22 @@ contract Nekobasu {
         driverToTripId[driver] = tripId;
 
         // Transactions
-        // driver.tripFee -> contract
+        // driver.tripFee -> contract done with payable.
         driverToPool[driver] = tripFee;
 
-        emit NewTripOffer(tripId, trip, driver);
+        emit NewTripOffer(tripId, trip, cost, driver);
     }
 
-    function makeBid(uint amount, uint tripId) public {
+    function makeBid(uint tripId) public payable {
         address passenger = msg.sender;
+        uint amount = msg.value;
 
         require (passengerToBidId[passenger] == 0, "passenger has bid");
-        require (amount <= msg.sender.balance, "insufficient funds");
 
         require (tripId <= trips.length, "trip not exist");
 
         Trip memory trip = trips[tripId-1];
+        require (amount >= trip.cost, "insufficient funds");
         require (!trip.started, "trip has started");
         require (trip.driver != passenger, "self bid");
         require (trip.seats > 0, "no more seats");
@@ -75,7 +81,7 @@ contract Nekobasu {
         passengerToBidId[passenger] = bidId;
 
         // Transactions
-        // passenger.amount -> contract
+        // passenger.amount -> contract done with payable.
 
         emit NewTripBid(tripId, bidId, bid, passenger);
     }
@@ -133,6 +139,7 @@ contract Nekobasu {
         require (driverToPool[driver] != tripFee, "trip has no passengers");
 
         // TODO: Check that the trip is on time.
+        // https://cryptozombies.io/en/lesson/3/chapter/5
 
         Trip memory trip = trips[tripId-1];
         trip.started = true;
