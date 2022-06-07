@@ -4,7 +4,17 @@ import { ReactComponent as DriverHello } from "../../assets/driverhello.svg";
 import { ReactComponent as PassengerHello } from "../../assets/passengerhello.svg";
 import LoginSection from "./components/loginsection";
 
+import { ethEnabled } from "../../../data/web3/web3";
+
+
 const LandingView = () => {
+  const askMetamask = async () => {
+    let enabled = await ethEnabled();
+    console.log(enabled);
+  }
+
+  askMetamask();
+
   return (
     <React.Fragment>
       <CssBaseline />
