@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
 
-export interface TitleWithLeftItemProps {
+interface TitleWithLeftItemProps {
   titleVariant:
     | 'h1'
     | 'h2'

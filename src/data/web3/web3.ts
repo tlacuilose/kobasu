@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import { BlockHeader, Block } from 'web3-eth';
 
 declare global {
   interface Window {
@@ -19,4 +18,5 @@ export const ethEnabled = async () => {
 
   return false;
 };
+
 // export const web3 = new Web3('ws://127.0.0.1:9545/')
