@@ -7,16 +7,20 @@ declare global {
   }
 }
 
-export const ethEnabled = async () => {
+export const ethConnectAndAccounts = async () =>
+  await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+export const ethGetAccounts = async () =>
+  await window.ethereum.request({ method: 'eth_accounts' });
+
+export const ethRequestConnection = async () => {
   if (window.ethereum) {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    await ethConnectAndAccounts();
 
     window.web3 = new Web3(window.ethereum);
-
-    return true;
+  } else {
+    alert('Get MetaMask!');
   }
-
-  return false;
 };
 
 // export const web3 = new Web3('ws://127.0.0.1:9545/')
