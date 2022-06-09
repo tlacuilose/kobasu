@@ -13,13 +13,15 @@ import PassengerMakeBid from './presentation/views/passenger/makebid/passengerma
 import PassengerTripView from './presentation/views/passenger/trip/passengertrip';
 
 const App = () => {
-  window.ethereum.on('chainChanged', () => {
-    window.location.reload();
-  });
+  if (window.ethereum) {
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
 
-  window.ethereum.on('accountsChanged', () => {
-    window.location.reload();
-  });
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+  }
 
   return (
     <React.Fragment>
