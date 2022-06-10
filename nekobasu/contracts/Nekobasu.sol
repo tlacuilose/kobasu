@@ -10,7 +10,7 @@ contract Nekobasu {
 
     event NewTripOffer(uint tripId, Trip trip, uint cost, address driver);
     event NewTripBid(uint tripId, uint bidId, Bid bid, address passenger);
-    event SeatOccupied(uint tripId, uint8 seats);
+    event SeatOccupied(uint tripId, uint bidId, Trip trip, Bid bid);
     event WithdrawBid(uint tripId, uint bidId, address passenger);
     event StartedTrip(uint tripId);
     event CancelledTrip(uint tripId);
@@ -134,7 +134,7 @@ contract Nekobasu {
         bids[bidId-1] = bid;
 
 
-        emit SeatOccupied(bid.tripId, trip.seats);
+        emit SeatOccupied(bid.tripId, bidId, trip, bid);
     }
 
     function withdrawBid() public {

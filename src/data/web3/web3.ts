@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 const NekobasuAbi = require('./abi/Nekobasu.json');
 
-const contractAddress = '0xd242F0B8C9fD174570E89352f966bC0DC601A9a8';
+const contractAddress = '0x8AAeceBD1Dc25A69Dd89F997e78171b91a973E36';
 
 declare global {
   interface Window {

@@ -8,49 +8,73 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { acceptBid, getPendingBids } from '../../../../../data/web3/nekobasu';
+import { initDapp } from '../../../../../data/web3/web3';
 
-function createData(account: string, amount: number) {
-  return { account, amount };
-}
+const PendingBidsList = () => {
+  const [bids, setBids] = useState<any[]>([]);
 
-const bids = [
-  createData('0x239809428390423', 200),
-  createData('0x548978293798324', 300),
-  createData('0x423875443433485', 250),
-  createData('0x629738923782737', 500),
-];
+  const getBids = async () => {
+    try {
+      await initDapp();
+      let results = await getPendingBids();
+      setBids(results);
+    } catch (err: any) {
+      console.log(err);
+      alert('Could not get pending bids');
+    }
+  };
 
-const PendingBidsList = () => (
-  <TableContainer component={Paper}>
-    <Table
-      sx={{ minWidth: '350px' }}
-      aria-label='Bids pending to be accepted by the driver.'
-    >
-      <TableHead>
-        <TableRow>
-          <TableCell>Account</TableCell>
-          <TableCell align='right'>Bid amount</TableCell>
-          <TableCell align='right'>Action</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {bids.map((bid) => (
-          <TableRow
-            key={bid.account}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-          >
-            <TableCell component='th' scope='row'>
-              {bid.account}
-            </TableCell>
-            <TableCell align='right'>{bid.amount}</TableCell>
-            <TableCell align='right'>
-              <Button>Accept</Button>
-            </TableCell>
+  const callAcceptBid = async (passenger: string) => {
+    try {
+      await acceptBid(passenger);
+    } catch (err: any) {
+      console.log(err);
+      alert(err);
+    }
+  };
+
+  useEffect(() => {
+    getBids();
+  }, []);
+
+  return (
+    <TableContainer component={Paper}>
+      <Table
+        sx={{ minWidth: '350px' }}
+        aria-label='Bids pending to be accepted by the driver.'
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Id</TableCell>
+            <TableCell align='left'>Passenger</TableCell>
+            <TableCell align='left'>Amount</TableCell>
+            <TableCell align='left'>Action</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
-);
+        </TableHead>
+        <TableBody>
+          {bids.map((bid) => (
+            <TableRow
+              key={bid.bidId}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component='th' scope='row'>
+                {bid.bidId}
+              </TableCell>
+              <TableCell align='left'>{bid.passenger}</TableCell>
+              <TableCell align='left'>{bid.bid.amount}</TableCell>
+              <TableCell align='left'>
+                <Button onClick={() => callAcceptBid(bid.passenger)}>
+                  Accept
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 export default PendingBidsList;

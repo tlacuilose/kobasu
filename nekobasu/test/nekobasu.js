@@ -235,7 +235,7 @@ contract("Nekobasu", accounts => {
     let tx2 = await nekobasu.acceptBid(passenger, {from: driver});
 
     truffleAssert.eventEmitted(tx2, "SeatOccupied", (ev) => {
-      return ev.tripId.toString() === tripId.toString() && ev.seats.toString() === (seats - 1).toString();
+      return ev.tripId.toString() === tripId.toString() && ev.trip.seats.toString() === (seats - 1).toString();
     });
   });
 
