@@ -33,3 +33,18 @@ Run truffle
 ```bash
 truffle develop
 ```
+
+Deploy contract in truffle cli
+
+```bash
+migrate --reset
+```
+
+Create a new contract and get its address
+
+```bash
+let neko = await Nekobasu.new();
+neko.address;
+```
+
+Copy address into web3.ts contractAddress

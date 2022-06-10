@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   Button,
@@ -10,9 +10,16 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import PassengerMakeBidViewModel from './viewmodel';
 
 const PassengerMakeBid = () => {
   const { tripId } = useParams();
+  const { amount, getTripInfo, onChange, callMakeBid } =
+    PassengerMakeBidViewModel();
+
+  useEffect(() => {
+    getTripInfo(Number(tripId));
+  }, []);
 
   return (
     <React.Fragment>
@@ -27,9 +34,8 @@ const PassengerMakeBid = () => {
                 <InputLabel htmlFor='offer-bid'>Bid</InputLabel>
                 <OutlinedInput
                   id='offer-bid'
-                  value='250'
-                  /*value={values.amount}*/
-                  /*onChange={handleChange('amount')}*/
+                  value={amount}
+                  onChange={onChange}
                   startAdornment={
                     <InputAdornment position='start'>$</InputAdornment>
                   }
@@ -40,9 +46,9 @@ const PassengerMakeBid = () => {
           </Grid>
           <Grid item md={2} xs={12}>
             <FormControl fullWidth>
-              <Link to='/passenger/trip'>
-                <Button variant='outlined'>Make bid</Button>
-              </Link>
+              <Button variant='outlined' onClick={callMakeBid}>
+                Make bid
+              </Button>
             </FormControl>
           </Grid>
         </Grid>

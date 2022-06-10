@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Button,
   Paper,
@@ -14,17 +14,21 @@ import { getAvailableOffers } from '../../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../../data/web3/web3';
 
 const PassengerOffersList = () => {
+  const navigate = useNavigate();
   const [offers, setOffers] = useState<any[]>([]);
   const getOffers = async () => {
     try {
       await initDapp();
       let result = await getAvailableOffers();
-      console.log(result);
       setOffers(result);
     } catch (err: any) {
       console.log(err);
       alert('Could not get any offers.');
     }
+  };
+
+  const goToMakeBid = (tripId: string) => {
+    navigate('/passenger/bid/' + tripId);
   };
 
   useEffect(() => {
@@ -42,7 +46,7 @@ const PassengerOffersList = () => {
             <TableCell align='center'>Driver</TableCell>
             <TableCell align='center'>Seats</TableCell>
             <TableCell align='center'>Cost</TableCell>
-            <TableCell align='center'>Appointment Time</TableCell>
+            <TableCell align='center'>Info</TableCell>
             <TableCell align='center'>Action</TableCell>
           </TableRow>
         </TableHead>
@@ -59,11 +63,11 @@ const PassengerOffersList = () => {
                 <TableCell align='right'>{offer.driver}</TableCell>
                 <TableCell align='right'>{offer.trip.seats}</TableCell>
                 <TableCell align='right'>{offer.cost}</TableCell>
-                <TableCell align='right'>{offer.appointmentTime}</TableCell>
+                <TableCell align='right'>{offer.trip.info}</TableCell>
                 <TableCell align='right'>
-                  <Link to={`/passenger/bid/${offer.tripId}`}>
-                    <Button>Make bid</Button>
-                  </Link>
+                  <Button onClick={() => goToMakeBid(offer.tripId)}>
+                    Make bid
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

@@ -54,6 +54,7 @@ const DriverHomeViewModel = () => {
       navigate('/driver/waitlist');
     } catch (err: any) {
       // TODO: Catch TypeError mistake from library.
+      console.log(err);
       if (err.message) {
         alert(err.message);
         setError(err.message);
