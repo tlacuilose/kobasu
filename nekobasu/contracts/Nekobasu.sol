@@ -31,12 +31,34 @@ contract Nekobasu {
         bool accepted;
     }
 
-    Trip[] public trips;
-    Bid[] public bids;
+    Trip[] trips;
+    Bid[] bids;
 
     mapping(address => uint) driverToTripId;
     mapping(address => uint) driverToPool;
     mapping(address => uint) passengerToBidId;
+
+    function getTrip(uint tripId) public view returns (Trip memory) {
+        require (tripId <= trips.length, "trip not exists");
+
+        Trip memory trip = trips[tripId - 1];
+        return  trip;
+    }
+
+    function getBid(uint bidId) public view returns (Bid memory) {
+        require (bidId <= trips.length, "bid not exists");
+
+        Bid memory bid = bids[bidId - 1];
+        return  bid;
+    }
+
+    function hasActiveTrip() public view returns (bool) {
+        return driverToTripId[msg.sender] > 0;
+    }
+
+    function hasActiveBid() public view returns (bool) {
+        return passengerToBidId[msg.sender] > 0;
+    }
 
     function offerTrip(string calldata info, uint8 seats, uint cost) public payable {
         address driver = msg.sender;
