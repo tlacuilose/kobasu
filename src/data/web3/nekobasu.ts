@@ -9,6 +9,7 @@ const callWrapper = async (methodCall: any) => {
     });
   });
 };
+
 const sendWrapper = async (methodCall: any) => {
   return new Promise((resolve, reject) => {
     methodCall
@@ -49,5 +50,51 @@ export const offerTrip = async (info: string, seats: Number, cost: Number) => {
 };
 
 export const startTrip = async () => {
-  return callWrapper(window.nekobasu.methods.startTrip());
+  let receipt = await sendWrapper(window.nekobasu.methods.startTrip());
+  return receipt;
+};
+
+export const cancelTrip = async () => {
+  let receipt = await sendWrapper(window.nekobasu.methods.cancelTrip());
+  console.log(receipt);
+  return receipt;
+};
+
+export const getAvailableOffers = async () => {
+  var offers: Map<string, string[]> = new Map<string, string[]>();
+
+  // Get all offers.
+  let evs = await window.nekobasu.getPastEvents('NewTripOffer', {
+    fromBlock: 0,
+    toBlock: 'latest',
+  });
+
+  evs.forEach((ev: any) => {
+    const res = ev.returnValues;
+    offers.set(res.tripId, res);
+  });
+
+  // Remove started offers.
+  evs = await window.nekobasu.getPastEvents('StartedTrip', {
+    fromBlock: 0,
+    toBlock: 'latest',
+  });
+
+  evs.forEach((ev: any) => {
+    const res = ev.returnValues;
+    offers.delete(res.tripId);
+  });
+
+  // Remove cancelled offers.
+  evs = await window.nekobasu.getPastEvents('CancelledTrip', {
+    fromBlock: 0,
+    toBlock: 'latest',
+  });
+
+  evs.forEach((ev: any) => {
+    const res = ev.returnValues;
+    offers.delete(res.tripId);
+  });
+
+  return Array.from(offers.values());
 };

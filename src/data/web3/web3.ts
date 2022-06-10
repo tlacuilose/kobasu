@@ -16,18 +16,20 @@ declare global {
 const reloadWindow = () => window.location.reload();
 
 export const initDapp = async () => {
-  window.ethereum.on('chainChanged', reloadWindow);
-  window.ethereum.on('accountsChanged', reloadWindow);
-  window.web3 = new Web3(window.ethereum);
-  window.web3.eth.handleRevert = true;
+  if (!window.nekobasu) {
+    window.ethereum.on('chainChanged', reloadWindow);
+    window.ethereum.on('accountsChanged', reloadWindow);
+    window.web3 = new Web3(window.ethereum);
+    window.web3.eth.handleRevert = true;
 
-  let accounts = await ethGetAccounts();
-  window.account = accounts[0];
+    let accounts = await ethGetAccounts();
+    window.account = accounts[0];
 
-  window.nekobasu = new window.web3!.eth.Contract(
-    NekobasuAbi.abi as AbiItem[],
-    contractAddress,
-  ) as any;
+    window.nekobasu = new window.web3!.eth.Contract(
+      NekobasuAbi.abi as AbiItem[],
+      contractAddress,
+    ) as any;
+  }
 };
 
 const removeEthListeners = () => {

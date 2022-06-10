@@ -41,7 +41,7 @@ const App = () => {
 
           <Route
             path='driver'
-            element={<LoggedInLayout user='Driver' opposing='Driver' />}
+            element={<LoggedInLayout user='Driver' opposing='Passenger' />}
           >
             <Route index element={<DriverHomeView />} />
             <Route path='waitlist' element={<DriverWaitListView />} />
