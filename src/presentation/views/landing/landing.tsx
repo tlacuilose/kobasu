@@ -1,11 +1,9 @@
+import { CssBaseline, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Button, CssBaseline, Grid, Typography } from '@mui/material';
-
+import { ethGetAccounts } from '../../../data/web3/web3';
 import { ReactComponent as DriverHello } from '../../assets/driverhello.svg';
 import { ReactComponent as PassengerHello } from '../../assets/passengerhello.svg';
 import LoginSection from './components/loginsection';
-import { ethRequestConnection, ethGetAccounts } from '../../../data/web3/web3';
-import TopBar from '../../global/components/topBar';
 
 const LandingView = () => {
   const [isNotConnected, setIsNotConnected] = useState(true);

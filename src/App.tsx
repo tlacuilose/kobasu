@@ -11,12 +11,12 @@ import LandingView from './presentation/views/landing/landing';
 import PassengerHomeView from './presentation/views/passenger/home/passengerhome';
 import PassengerMakeBid from './presentation/views/passenger/makebid/passengermakebid';
 import PassengerTripView from './presentation/views/passenger/trip/passengertrip';
-import { addEthListeners, ethGetAccounts } from './data/web3/web3';
+import { initDapp, ethGetAccounts } from './data/web3/web3';
 
 const App = () => {
   const checkConnection = async () => {
     await ethGetAccounts().then((accounts) => {
-      if (accounts.length > 0) addEthListeners();
+      if (accounts.length > 0) initDapp();
     });
   };
 
