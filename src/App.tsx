@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import LoggedInLayout from './presentation/global/components/loggedinlayout';
@@ -11,17 +11,18 @@ import LandingView from './presentation/views/landing/landing';
 import PassengerHomeView from './presentation/views/passenger/home/passengerhome';
 import PassengerMakeBid from './presentation/views/passenger/makebid/passengermakebid';
 import PassengerTripView from './presentation/views/passenger/trip/passengertrip';
+import { addEthListeners, ethGetAccounts } from './data/web3/web3';
 
 const App = () => {
-  if (window.ethereum) {
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload();
+  const checkConnection = async () => {
+    await ethGetAccounts().then((accounts) => {
+      if (accounts.length > 0) addEthListeners();
     });
+  };
 
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload();
-    });
-  }
+  useEffect(() => {
+    checkConnection();
+  });
 
   return (
     <React.Fragment>
@@ -29,13 +30,19 @@ const App = () => {
         <Route index element={<LandingView />} />
 
         <Route element={<RequireAuth />}>
-          <Route path='passenger' element={<LoggedInLayout user='Passenger' />}>
+          <Route
+            path='passenger'
+            element={<LoggedInLayout user='Passenger' opposing='Driver' />}
+          >
             <Route index element={<PassengerHomeView />} />
             <Route path='bid/:tripId' element={<PassengerMakeBid />} />
             <Route path='trip' element={<PassengerTripView />} />
           </Route>
 
-          <Route path='driver' element={<LoggedInLayout user='Driver' />}>
+          <Route
+            path='driver'
+            element={<LoggedInLayout user='Driver' opposing='Driver' />}
+          >
             <Route index element={<DriverHomeView />} />
             <Route path='waitlist' element={<DriverWaitListView />} />
             <Route path='trip' element={<DriverTripView />} />

@@ -7,17 +7,35 @@ declare global {
   }
 }
 
-export const ethConnectAndAccounts = async () =>
+const reloadWindow = () =>
+  window.location.reload();
+
+export const addEthListeners = () => {
+  window.ethereum.on('chainChanged', reloadWindow);
+  window.ethereum.on('accountsChanged', reloadWindow);
+}
+
+const removeEthListeners = () => {
+  window.ethereum.removeListener('chainChanged', reloadWindow);
+  window.ethereum.removeListener('accountsChanged', reloadWindow);
+}
+
+export const ethConnectAndAccounts = async () => 
   await window.ethereum.request({ method: 'eth_requestAccounts' });
 
 export const ethGetAccounts = async () =>
   await window.ethereum.request({ method: 'eth_accounts' });
 
-export const ethRequestConnection = async () => {
+export const ethRequestConnection = async (onSuccess: () => void) => {
   if (window.ethereum) {
     await ethConnectAndAccounts();
 
     window.web3 = new Web3(window.ethereum);
+
+    onSuccess();
+
+    addEthListeners();
+
   } else {
     alert('Get MetaMask!');
   }
