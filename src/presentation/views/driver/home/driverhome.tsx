@@ -14,9 +14,19 @@ import {
   Typography,
 } from '@mui/material';
 
-import { offerTrip } from '../../../../data/web3/web3';
+import DriverHomeViewModel from './viewmodel';
 
 const DriverHomeView = () => {
+  const {
+    from,
+    to,
+    seats,
+    cost,
+    onChangeInput,
+    onChangeSlider,
+    callOfferTrip,
+  } = DriverHomeViewModel();
+
   return (
     <React.Fragment>
       <Typography variant='h4' component='div'>
@@ -31,14 +41,15 @@ const DriverHomeView = () => {
                 <Select
                   labelId='offer-from'
                   id='offer-from'
-                  value='10'
-                  /*value={age}*/
-                  label='Age'
-                  /* onChange={handleChange} */
+                  value={from}
+                  label='From'
+                  onChange={onChangeInput}
+                  name='from'
                 >
-                  <MenuItem value={10}>Mexico City</MenuItem>
-                  <MenuItem value={20}>Puebla</MenuItem>
-                  <MenuItem value={30}>Queretaro</MenuItem>
+                  <MenuItem value={''}>Select a city</MenuItem>
+                  <MenuItem value={'Mexico City'}>Mexico City</MenuItem>
+                  <MenuItem value={'Puebla'}>Puebla</MenuItem>
+                  <MenuItem value={'Queretaro'}>Queretaro</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth>
@@ -46,14 +57,15 @@ const DriverHomeView = () => {
                 <Select
                   labelId='offer-to'
                   id='offer-to'
-                  value='10'
-                  /*value={age}*/
-                  label='Age'
-                  /* onChange={handleChange} */
+                  value={to}
+                  label='To'
+                  onChange={onChangeInput}
+                  name='to'
                 >
-                  <MenuItem value={10}>Mexico City</MenuItem>
-                  <MenuItem value={20}>Puebla</MenuItem>
-                  <MenuItem value={30}>Queretaro</MenuItem>
+                  <MenuItem value={''}>Select a city</MenuItem>
+                  <MenuItem value={'Mexico City'}>Mexico City</MenuItem>
+                  <MenuItem value={'Puebla'}>Puebla</MenuItem>
+                  <MenuItem value={'Queretaro'}>Queretaro</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth>
@@ -78,15 +90,18 @@ const DriverHomeView = () => {
                   min={1}
                   max={20}
                   marks
+                  value={seats}
+                  onChange={onChangeSlider}
+                  name='seats'
                 />
               </FormControl>
               <FormControl fullWidth>
                 <InputLabel htmlFor='offer-cost'>Cost</InputLabel>
                 <OutlinedInput
                   id='offer-cost'
-                  value='0'
-                  /*value={values.amount}*/
-                  /*onChange={handleChange('amount')}*/
+                  value={cost}
+                  onChange={onChangeInput}
+                  name='cost'
                   startAdornment={
                     <InputAdornment position='start'>$</InputAdornment>
                   }
@@ -98,7 +113,7 @@ const DriverHomeView = () => {
           <Grid item md={2} xs={12}>
             <FormControl fullWidth>
               {/* <Link to='/driver/waitlist'> */}
-              <Button variant='outlined' onClick={offerTrip}>
+              <Button variant='outlined' onClick={callOfferTrip}>
                 Make offer
               </Button>
               {/* </Link> */}
