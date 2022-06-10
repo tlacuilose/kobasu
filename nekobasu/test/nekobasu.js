@@ -56,7 +56,7 @@ contract("Nekobasu", accounts => {
 
   // Make Bid
 
-  it("should not allow driver to bid on its offers.", async () => {
+  it("should not allow driver to bid on its offers", async () => {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -69,7 +69,7 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow passenger (not driver) to bid in an unexistent trip.", async () => {
+  it("should not allow passenger (not driver) to bid in an unexistent trip", async () => {
     const nekobasu = await Nekobasu.deployed();
 
     var bid = 200;
@@ -81,7 +81,7 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow a passenger to bid again in a trip.", async () => {
+  it("should not allow a passenger to bid again in a trip", async () => {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -110,7 +110,7 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow a passenger to bid in a trip with no seats.", async ()=> {
+  it("should not allow a passenger to bid in a trip with no seats", async ()=> {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -136,7 +136,7 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow a passenger to bid less than the cost of a trip.", async () => {
+  it("should not allow a passenger to bid less than the cost of a trip", async () => {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -156,7 +156,7 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should allow a passenger to bid in a trip.", async () => {
+  it("should allow a passenger to bid in a trip", async () => {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -435,6 +435,55 @@ contract("Nekobasu", accounts => {
 
   });
 
+  // Finish trip
+
+  it("should not be able to finish an unexistent trip", async () => {
+    await truffleAssert.reverts(
+      nekobasu.finishTrip({from: driver}),
+      "driver has no trip"
+    );
+  });
+
+  it("should not be able to finish a trip that has not started", async () => {
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+    var tripId;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    let bid1 = 200;
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid1});
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    await truffleAssert.reverts(
+      nekobasu.finishTrip({from: driver}),
+      "trip has not started"
+    );
+  });
+
+  it("should be able to finish a trip that has started", async () => {
+    let tx = await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
+    var tripId;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    let bid1 = 200;
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid1});
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    await nekobasu.startTrip({from: driver});
+
+    let tx2 = await nekobasu.finishTrip({from: driver});
+
+    truffleAssert.eventEmitted(tx2, "FinishedTrip", (ev) => {
+      return ev.tripId.toString() === tripId.toString();
+    })
+  });
 
   // Transactions
 
