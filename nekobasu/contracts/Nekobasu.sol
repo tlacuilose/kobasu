@@ -9,11 +9,13 @@ contract Nekobasu {
     }
 
     event NewTripOffer(uint tripId, Trip trip, uint cost, address driver);
-    event NewTripBid(uint tripId, uint bidId, Bid bid, address passenger);
-    event SeatOccupied(uint tripId, uint8 seats);
-    event WithdrawBid(uint tripId, uint bidId, address passenger);
-    event StartedTrip(uint tripId);
-    event CancelledTrip(uint tripId);
+    event NewTripBid(uint indexed tripId, uint indexed bidId, Bid bid, address passenger);
+    event SeatOccupied(uint indexed tripId, uint indexed bidId, Trip trip, Bid bid);
+    event WithdrawBid(uint indexed tripId, uint indexed bidId, address passenger);
+    event FinishedBid(uint indexed bidId);
+    event StartedTrip(uint indexed tripId);
+    event CancelledTrip(uint indexed tripId);
+    event FinishedTrip(uint indexed tripId);
 
     struct Trip {
         address driver;
@@ -30,12 +32,34 @@ contract Nekobasu {
         bool accepted;
     }
 
-    Trip[] public trips;
-    Bid[] public bids;
+    Trip[] trips;
+    Bid[] bids;
 
     mapping(address => uint) driverToTripId;
     mapping(address => uint) driverToPool;
     mapping(address => uint) passengerToBidId;
+
+    function getTrip(uint tripId) public view returns (Trip memory) {
+        require (tripId <= trips.length, "trip not exists");
+
+        Trip memory trip = trips[tripId - 1];
+        return  trip;
+    }
+
+    function getBid(uint bidId) public view returns (Bid memory) {
+        require (bidId <= bids.length, "bid not exists");
+
+        Bid memory bid = bids[bidId - 1];
+        return  bid;
+    }
+
+    function getActiveTrip() public view returns (uint) {
+        return driverToTripId[msg.sender];
+    }
+
+    function getActiveBid() public view returns (uint) {
+        return passengerToBidId[msg.sender];
+    }
 
     function offerTrip(string calldata info, uint8 seats, uint cost) public payable {
         address driver = msg.sender;
@@ -68,6 +92,7 @@ contract Nekobasu {
         require (tripId <= trips.length, "trip not exist");
 
         Trip memory trip = trips[tripId-1];
+        require (driverToTripId[trip.driver] == tripId, "trip is not offered");
         require (amount >= trip.cost, "insufficient funds");
         require (!trip.started, "trip has started");
         require (trip.driver != passenger, "self bid");
@@ -110,7 +135,8 @@ contract Nekobasu {
         bid.accepted = true;
         bids[bidId-1] = bid;
 
-        emit SeatOccupied(bid.tripId, trip.seats);
+
+        emit SeatOccupied(bid.tripId, bidId, trip, bid);
     }
 
     function withdrawBid() public {
@@ -131,6 +157,21 @@ contract Nekobasu {
         emit WithdrawBid(bid.tripId, bidId, passenger);
     }
 
+    function finishBid() public {
+        address passenger = msg.sender;
+        uint bidId = passengerToBidId[passenger];
+
+        require (bidId != 0, "passenger has no bid");
+
+        Bid memory bid = bids[bidId-1];
+        
+        require (bid.accepted, "bid has not been accepted");
+
+        passengerToBidId[passenger] = 0;
+
+        emit FinishedBid(bidId);
+    }
+
     function startTrip() public {
         address payable driver = payable(msg.sender);
         uint tripId = driverToTripId[driver];
@@ -144,7 +185,6 @@ contract Nekobasu {
         Trip memory trip = trips[tripId-1];
         trip.started = true;
         trips[tripId-1] = trip;
-        driverToTripId[driver] = 0;
 
         // Transactions
         // pool -> driver
@@ -169,6 +209,21 @@ contract Nekobasu {
 
 
         emit CancelledTrip(tripId);
+    }
+
+    function finishTrip() public {
+        address driver = msg.sender;
+        uint tripId = driverToTripId[driver];
+
+        require (tripId != 0, "driver has no trip");
+
+        Trip memory trip = trips[tripId-1];
+        
+        require (trip.started, "trip has not started");
+
+        driverToTripId[driver] = 0;
+
+        emit FinishedTrip(tripId);
     }
 
     /*

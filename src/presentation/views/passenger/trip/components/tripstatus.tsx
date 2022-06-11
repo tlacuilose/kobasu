@@ -1,7 +1,11 @@
 import { Paper, Typography } from '@mui/material';
 
 interface TripStatusProps {
-  status: 'Waiting for acceptance' | 'Accepted' | 'Started';
+  status:
+    | 'Waiting for acceptance'
+    | 'Accepted'
+    | 'Started'
+    | 'Waiting for bids';
 }
 
 const TripStatus = (props: TripStatusProps) => (

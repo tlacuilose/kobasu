@@ -1,20 +1,57 @@
 import { Link } from 'react-router-dom';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 
 import TitleWithLeftItem from '../../../global/components/titlewithleftitem';
 import TripStatus from './components/tripstatus';
+import PassengerTripViewModel from './viewmodel';
+import React, { useEffect } from 'react';
 
-const PassengerTripView = () => (
-  <Stack spacing={2}>
-    <TitleWithLeftItem titleVariant='h4' title='Your trip 0x03423942839 is:'>
-      <Link to='/passenger'>
-        <Button>Finish</Button>
-      </Link>
-    </TitleWithLeftItem>
-    <TripStatus status='Waiting for acceptance' />
-    <TripStatus status='Accepted' />
-    <TripStatus status='Started' />
-  </Stack>
-);
+const PassengerTripView = () => {
+  const { bid, trip, checkIfPassengerHasBid, callWithdrawBid, callFinishBid } =
+    PassengerTripViewModel();
+
+  useEffect(() => {
+    checkIfPassengerHasBid();
+  }, []);
+
+  const viewBidTitle = bid && trip ? 'Your bid on trip' + bid.tripId : '';
+  const viewTripTitle = bid && trip ? 'Your trip' + bid.tripId + ' status' : '';
+
+  return (
+    <React.Fragment>
+      {bid && trip ? (
+        <Stack spacing={2}>
+          <Typography variant='h4' component='div'>
+            Status report
+          </Typography>
+          <TitleWithLeftItem titleVariant='h5' title={viewBidTitle}>
+            {bid.accepted ? (
+              <Button onClick={callFinishBid}>Finish trip</Button>
+            ) : (
+              <Button onClick={callWithdrawBid}>Withdraw bid</Button>
+            )}
+          </TitleWithLeftItem>
+          <Typography variant='h6' component='div'>
+            {bid.amount}
+          </Typography>
+          <TripStatus
+            status={bid.accepted ? 'Accepted' : 'Waiting for acceptance'}
+          />
+          <Typography variant='h5' component='div'>
+            {viewTripTitle}
+          </Typography>
+          <Typography variant='h6' component='div'>
+            {trip.info}
+          </Typography>
+          <TripStatus status={trip.started ? 'Started' : 'Waiting for bids'} />
+        </Stack>
+      ) : (
+        <Typography variant='h4' component='div'>
+          Passenger has no bid
+        </Typography>
+      )}
+    </React.Fragment>
+  );
+};
 
 export default PassengerTripView;

@@ -1,11 +1,41 @@
 import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+const NekobasuAbi = require('./abi/Nekobasu.json');
+
+const contractAddress = '0x277fF6E5353e927116f6e872a0ebECE7da1249A4';
 
 declare global {
   interface Window {
     ethereum?: any;
     web3?: Web3;
+    nekobasu?: any;
+    account?: any;
   }
 }
+
+const reloadWindow = () => window.location.reload();
+
+export const initDapp = async () => {
+  if (!window.nekobasu) {
+    window.ethereum.on('chainChanged', reloadWindow);
+    window.ethereum.on('accountsChanged', reloadWindow);
+    window.web3 = new Web3(window.ethereum);
+    window.web3.eth.handleRevert = true;
+
+    let accounts = await ethGetAccounts();
+    window.account = accounts[0];
+
+    window.nekobasu = new window.web3!.eth.Contract(
+      NekobasuAbi.abi as AbiItem[],
+      contractAddress,
+    ) as any;
+  }
+};
+
+const removeEthListeners = () => {
+  window.ethereum.removeListener('chainChanged', reloadWindow);
+  window.ethereum.removeListener('accountsChanged', reloadWindow);
+};
 
 export const ethConnectAndAccounts = async () =>
   await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -13,14 +43,14 @@ export const ethConnectAndAccounts = async () =>
 export const ethGetAccounts = async () =>
   await window.ethereum.request({ method: 'eth_accounts' });
 
-export const ethRequestConnection = async () => {
+export const ethRequestConnection = async (onSuccess: () => void) => {
   if (window.ethereum) {
     await ethConnectAndAccounts();
 
-    window.web3 = new Web3(window.ethereum);
+    initDapp();
+
+    onSuccess();
   } else {
     alert('Get MetaMask!');
   }
 };
-
-// export const web3 = new Web3('ws://127.0.0.1:9545/')
