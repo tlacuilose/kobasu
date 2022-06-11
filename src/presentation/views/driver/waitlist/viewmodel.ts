@@ -39,7 +39,6 @@ const DriverWaitListViewModel = () => {
         navigate('/driver');
       } else {
         let trip = (await getTrip(tripId)) as any;
-        console.log(trip);
         if (trip.started) {
           navigate('/driver/trip');
         } else {

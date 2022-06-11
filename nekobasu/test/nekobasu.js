@@ -111,7 +111,30 @@ contract("Nekobasu", accounts => {
     );
   });
 
-  it("should not allow a passenger to bid in a trip with no seats", async ()=> {
+  it("should not allow a passenger to bid in a trip that has been cancelled", async () => {
+    var info = "New trip";
+    var seats = 1;
+    var cost = 200;
+
+    let tx = await nekobasu.offerTrip(info, seats, cost, {from: driver, value: tripFee});
+
+    var tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    await nekobasu.cancelTrip({from: driver});
+
+    var bid = 200;
+    await truffleAssert.reverts(
+      nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()}),
+      "trip is not offered"
+    );
+
+  });
+
+  it("should not allow a passenger to bid in a trip with no seats", async () => {
     var info = "New trip";
     var seats = 1;
     var cost = 200;
@@ -327,6 +350,66 @@ contract("Nekobasu", accounts => {
 
     truffleAssert.eventEmitted(tx3, "WithdrawBid", (ev) => {
       return ev.tripId.toString() === tripId.toString() && ev.bidId.toString() === bidId.toString() && ev.passenger.toString() === passenger;
+    });
+  });
+
+  it("should not allow a passenger to finish an unexistent bid", async () => {
+    await truffleAssert.reverts(
+      nekobasu.finishBid({from: passenger}),
+      "passenger has no bid"
+    );
+  });
+
+  it("should not allow a passenger to finish a bid that was not accepted", async () => {
+    var info = "New trip";
+    var seats = 1;
+    var cost = 200;
+
+    let tx = await nekobasu.offerTrip(info, seats, cost, {from: driver, value: tripFee});
+
+    var tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    var bid = 200;
+    await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
+
+    await truffleAssert.reverts(
+      nekobasu.finishBid({from: passenger}),
+      "bid has not been accepted"
+    );
+    
+  });
+
+  it("should allow a passenger to finish a bid that was accepted", async () => {
+    var info = "New trip";
+    var seats = 1;
+    var cost = 200;
+
+    let tx = await nekobasu.offerTrip(info, seats, cost, {from: driver, value: tripFee});
+
+    var tripId = 0;
+    truffleAssert.eventEmitted(tx, "NewTripOffer", (ev) => {
+      tripId = ev.tripId;
+      return ev.driver.toString() === driver;
+    });
+
+    var bid = 200;
+    let tx2 = await nekobasu.makeBid(tripId, {from: passenger, value: bid.toString()});
+    var bidId;
+    truffleAssert.eventEmitted(tx2, "NewTripBid", (ev) => {
+      bidId = ev.bidId;
+      return ev.passenger.toString() === passenger;
+    });
+
+    await nekobasu.acceptBid(passenger, {from: driver});
+
+    let tx3 = await nekobasu.finishBid({from: passenger});
+
+    truffleAssert.eventEmitted(tx3, "FinishedBid", (ev) => {
+      return ev.bidId.toString() === bidId.toString();
     });
   });
 

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTrip, makeBid } from '../../../../data/web3/nekobasu';
+import { getActiveBid, getTrip, makeBid } from '../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../data/web3/web3';
 
 const PassengerMakeBidViewModel = () => {
@@ -41,11 +41,25 @@ const PassengerMakeBidViewModel = () => {
     }
   };
 
+  const checkIfPassengerHasBid = async () => {
+    try {
+      await initDapp();
+      let bidId = await getActiveBid();
+      if (bidId > 0) {
+        navigate('/passenger/trip');
+      }
+    } catch (err: any) {
+      console.log(err);
+      alert(err);
+    }
+  };
+
   return {
     amount,
     getTripInfo,
     onChange,
     callMakeBid,
+    checkIfPassengerHasBid,
   };
 };
 

@@ -14,10 +14,11 @@ import PassengerMakeBidViewModel from './viewmodel';
 
 const PassengerMakeBid = () => {
   const { tripId } = useParams();
-  const { amount, getTripInfo, onChange, callMakeBid } =
+  const { amount, getTripInfo, onChange, callMakeBid, checkIfPassengerHasBid } =
     PassengerMakeBidViewModel();
 
   useEffect(() => {
+    checkIfPassengerHasBid();
     getTripInfo(Number(tripId));
   }, []);
 

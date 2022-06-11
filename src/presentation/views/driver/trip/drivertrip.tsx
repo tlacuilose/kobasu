@@ -24,9 +24,13 @@ const DriverTripView = () => {
       if (tripId === 0) {
         navigate('/driver');
       } else {
-        let trip = await getTrip(tripId);
-        setTripId(tripId);
-        setTrip(trip);
+        let trip = (await getTrip(tripId)) as any;
+        if (!trip.started) {
+          navigate('/driver/waitlist');
+        } else {
+          setTripId(tripId);
+          setTrip(trip);
+        }
       }
     } catch (err: any) {
       console.log(err);

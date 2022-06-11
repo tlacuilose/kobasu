@@ -9,12 +9,13 @@ contract Nekobasu {
     }
 
     event NewTripOffer(uint tripId, Trip trip, uint cost, address driver);
-    event NewTripBid(uint tripId, uint bidId, Bid bid, address passenger);
-    event SeatOccupied(uint tripId, uint bidId, Trip trip, Bid bid);
-    event WithdrawBid(uint tripId, uint bidId, address passenger);
-    event StartedTrip(uint tripId);
-    event CancelledTrip(uint tripId);
-    event FinishedTrip(uint tripId);
+    event NewTripBid(uint indexed tripId, uint indexed bidId, Bid bid, address passenger);
+    event SeatOccupied(uint indexed tripId, uint indexed bidId, Trip trip, Bid bid);
+    event WithdrawBid(uint indexed tripId, uint indexed bidId, address passenger);
+    event FinishedBid(uint indexed bidId);
+    event StartedTrip(uint indexed tripId);
+    event CancelledTrip(uint indexed tripId);
+    event FinishedTrip(uint indexed tripId);
 
     struct Trip {
         address driver;
@@ -46,7 +47,7 @@ contract Nekobasu {
     }
 
     function getBid(uint bidId) public view returns (Bid memory) {
-        require (bidId <= trips.length, "bid not exists");
+        require (bidId <= bids.length, "bid not exists");
 
         Bid memory bid = bids[bidId - 1];
         return  bid;
@@ -91,6 +92,7 @@ contract Nekobasu {
         require (tripId <= trips.length, "trip not exist");
 
         Trip memory trip = trips[tripId-1];
+        require (driverToTripId[trip.driver] == tripId, "trip is not offered");
         require (amount >= trip.cost, "insufficient funds");
         require (!trip.started, "trip has started");
         require (trip.driver != passenger, "self bid");
@@ -153,6 +155,21 @@ contract Nekobasu {
         passenger.transfer(bid.amount);
 
         emit WithdrawBid(bid.tripId, bidId, passenger);
+    }
+
+    function finishBid() public {
+        address passenger = msg.sender;
+        uint bidId = passengerToBidId[passenger];
+
+        require (bidId != 0, "passenger has no bid");
+
+        Bid memory bid = bids[bidId-1];
+        
+        require (bid.accepted, "bid has not been accepted");
+
+        passengerToBidId[passenger] = 0;
+
+        emit FinishedBid(bidId);
     }
 
     function startTrip() public {

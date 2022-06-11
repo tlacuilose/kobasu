@@ -48,11 +48,20 @@ export const getTrip = async (tripId: Number) => {
   return trip;
 };
 
+export const getBid = async (bidId: Number) => {
+  let bid = await callWrapper(window.nekobasu.methods.getBid(bidId));
+  return bid;
+};
+
 export const getActiveTrip = async () => {
   let tripId = await callWrapper(window.nekobasu.methods.getActiveTrip());
   return Number(tripId);
 };
 
+export const getActiveBid = async () => {
+  let bidId = await callWrapper(window.nekobasu.methods.getActiveBid());
+  return Number(bidId);
+};
 export const offerTrip = async (info: string, seats: Number, cost: Number) => {
   let tripFee = await getTripFee();
   return payableSendWrapper(
@@ -82,6 +91,14 @@ export const makeBid = async (tripId: Number, amount: Number) => {
 
 export const acceptBid = async (passenger: string) => {
   return sendWrapper(window.nekobasu.methods.acceptBid(passenger));
+};
+
+export const withdrawBid = async () => {
+  return sendWrapper(window.nekobasu.methods.withdrawBid());
+};
+
+export const finishBid = async () => {
+  return sendWrapper(window.nekobasu.methods.finishBid());
 };
 
 export const getAvailableOffers = async () => {
@@ -140,6 +157,19 @@ export const getPendingBids = async (tripId: Number) => {
 
   // Remove accepted bids.
   evs = await window.nekobasu.getPastEvents('SeatOccupied', {
+    filter: { tripId: tripId },
+    fromBlock: 0,
+    toBlock: 'latest',
+  });
+
+  evs.forEach((ev: any) => {
+    const res = ev.returnValues;
+    bids.delete(res.bidId);
+  });
+
+  // Remove withdrawed bids.
+  evs = await window.nekobasu.getPastEvents('WithdrawBid', {
+    filter: { tripId: tripId },
     fromBlock: 0,
     toBlock: 'latest',
   });
