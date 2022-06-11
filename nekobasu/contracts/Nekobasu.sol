@@ -52,12 +52,12 @@ contract Nekobasu {
         return  bid;
     }
 
-    function hasActiveTrip() public view returns (bool) {
-        return driverToTripId[msg.sender] > 0;
+    function getActiveTrip() public view returns (uint) {
+        return driverToTripId[msg.sender];
     }
 
-    function hasActiveBid() public view returns (bool) {
-        return passengerToBidId[msg.sender] > 0;
+    function getActiveBid() public view returns (uint) {
+        return passengerToBidId[msg.sender];
     }
 
     function offerTrip(string calldata info, uint8 seats, uint cost) public payable {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   FormControl,
@@ -25,7 +25,12 @@ const DriverHomeView = () => {
     onChangeInput,
     onChangeSlider,
     callOfferTrip,
+    checkIfDriverHasTrip,
   } = DriverHomeViewModel();
+
+  useEffect(() => {
+    checkIfDriverHasTrip();
+  });
 
   return (
     <React.Fragment>

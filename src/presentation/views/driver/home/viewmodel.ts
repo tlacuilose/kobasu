@@ -1,7 +1,8 @@
 import { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { offerTrip } from '../../../../data/web3/nekobasu';
+import { getActiveTrip, offerTrip } from '../../../../data/web3/nekobasu';
 import { SelectChangeEvent } from '@mui/material';
+import { initDapp } from '../../../../data/web3/web3';
 
 const DriverHomeViewModel = () => {
   const navigate = useNavigate();
@@ -62,11 +63,25 @@ const DriverHomeViewModel = () => {
     }
   };
 
+  const checkIfDriverHasTrip = async () => {
+    try {
+      await initDapp();
+      let tripId = await getActiveTrip();
+      if (tripId > 0) {
+        navigate('/driver/waitlist');
+      }
+    } catch (err: any) {
+      console.log(err);
+      alert(err);
+    }
+  };
+
   return {
     ...formValues,
     onChangeInput,
     onChangeSlider,
     callOfferTrip,
+    checkIfDriverHasTrip,
     error,
   };
 };

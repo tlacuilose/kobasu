@@ -12,13 +12,13 @@ import { useEffect, useState } from 'react';
 import { acceptBid, getPendingBids } from '../../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../../data/web3/web3';
 
-const PendingBidsList = () => {
+const PendingBidsList = (props: { tripId: Number }) => {
   const [bids, setBids] = useState<any[]>([]);
 
   const getBids = async () => {
     try {
       await initDapp();
-      let results = await getPendingBids();
+      let results = await getPendingBids(props.tripId);
       setBids(results);
     } catch (err: any) {
       console.log(err);

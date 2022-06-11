@@ -540,20 +540,20 @@ contract("Nekobasu", accounts => {
   });
 
   it("should not have an active trip with out offering it", async () => {
-    let activeTrip = await nekobasu.hasActiveTrip({from: driver});
-    assert(!activeTrip);
+    let activeTrip = await nekobasu.getActiveTrip({from: driver});
+    assert(activeTrip == 0);
   });
 
   it("should have an active trip when offer has been made", async () => {
     await nekobasu.offerTrip("New trip", 2, 200, {from: driver, value: tripFee});
 
-    let activeTrip = await nekobasu.hasActiveTrip({from: driver});
-    assert(activeTrip);
+    let activeTrip = await nekobasu.getActiveTrip({from: driver});
+    assert(activeTrip > 0);
   });
 
   it("should not have an active bid with out making a bid", async () => {
-    let activeBid = await nekobasu.hasActiveBid({from: passenger});
-    assert(!activeBid);
+    let activeBid = await nekobasu.getActiveBid({from: passenger});
+    assert(activeBid == 0);
   });
 
   it("should have an active bid when a bid has been made", async () => {
@@ -568,8 +568,8 @@ contract("Nekobasu", accounts => {
     
     await nekobasu.makeBid(tripId, {from: passenger, value: cost});
 
-    let activeBid = await nekobasu.hasActiveBid({from: passenger});
-    assert(activeBid);
+    let activeBid = await nekobasu.getActiveBid({from: passenger});
+    assert(activeBid > 0);
   });
 
   // Transactions

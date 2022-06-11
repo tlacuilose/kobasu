@@ -1,52 +1,49 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { Button, Stack, Typography } from '@mui/material';
 
 import AcceptedBidsList from './components/acceptedbidslist';
 import PendingBidsList from './components/pendingbidslist';
 import TitleWithLeftItem from '../../../global/components/titlewithleftitem';
-import { cancelTrip, startTrip } from '../../../../data/web3/nekobasu';
+import DriverWaitListViewModel from './viewmodel';
 
 const DriverWaitListView = () => {
-  const navigate = useNavigate();
+  const { tripId, trip, callCancelTrip, callStartTrip, checkIfDriverHasTrip } =
+    DriverWaitListViewModel();
 
-  const callCancelTrip = async () => {
-    try {
-      await cancelTrip();
-      navigate('/driver');
-    } catch (err: any) {
-      alert(err);
-    }
-  };
+  useEffect(() => {
+    checkIfDriverHasTrip();
+  }, []);
 
-  const callStartTrip = async () => {
-    try {
-      await startTrip();
-      navigate('/driver/trip');
-    } catch (err: any) {
-      alert(err);
-    }
-  };
+  const tripTitle = 'Waitlist for trip: ' + tripId;
 
   return (
     <React.Fragment>
-      <Stack spacing={4} sx={{ marginY: '16px' }}>
+      {!trip ? (
         <Typography variant='h4' component='div'>
-          Waitlist for trip: 0x4338498934433823238
+          Driver has no trip to wait for.
         </Typography>
-        <Stack spacing={2} sx={{ marginTop: '16px' }}>
-          <TitleWithLeftItem titleVariant='h5' title='Received bids.'>
-            <Button onClick={callCancelTrip}>Revoke offer</Button>
-          </TitleWithLeftItem>
-          <PendingBidsList />
+      ) : (
+        <Stack spacing={4} sx={{ marginY: '16px' }}>
+          <Typography variant='h4' component='div'>
+            {tripTitle}
+          </Typography>
+          <Typography variant='h6' component='div'>
+            {trip.info}
+          </Typography>
+          <Stack spacing={2} sx={{ marginTop: '16px' }}>
+            <TitleWithLeftItem titleVariant='h5' title='Received bids.'>
+              <Button onClick={callCancelTrip}>Revoke offer</Button>
+            </TitleWithLeftItem>
+            <PendingBidsList tripId={tripId} />
+          </Stack>
+          <Stack spacing={2} sx={{ marginTop: '16px' }}>
+            <TitleWithLeftItem titleVariant='h5' title='Accepted bids.'>
+              <Button onClick={callStartTrip}>Start trip</Button>
+            </TitleWithLeftItem>
+            <AcceptedBidsList tripId={tripId} />
+          </Stack>
         </Stack>
-        <Stack spacing={2} sx={{ marginTop: '16px' }}>
-          <TitleWithLeftItem titleVariant='h5' title='Accepted bids.'>
-            <Button onClick={callStartTrip}>Start trip</Button>
-          </TitleWithLeftItem>
-          <AcceptedBidsList />
-        </Stack>
-      </Stack>
+      )}
     </React.Fragment>
   );
 };

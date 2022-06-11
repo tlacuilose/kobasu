@@ -48,6 +48,11 @@ export const getTrip = async (tripId: Number) => {
   return trip;
 };
 
+export const getActiveTrip = async () => {
+  let tripId = await callWrapper(window.nekobasu.methods.getActiveTrip());
+  return Number(tripId);
+};
+
 export const offerTrip = async (info: string, seats: Number, cost: Number) => {
   let tripFee = await getTripFee();
   return payableSendWrapper(
@@ -63,7 +68,11 @@ export const startTrip = async () => {
 
 export const cancelTrip = async () => {
   let receipt = await sendWrapper(window.nekobasu.methods.cancelTrip());
-  console.log(receipt);
+  return receipt;
+};
+
+export const finishTrip = async () => {
+  let receipt = await sendWrapper(window.nekobasu.methods.finishTrip());
   return receipt;
 };
 
@@ -114,17 +123,15 @@ export const getAvailableOffers = async () => {
   return Array.from(offers.values());
 };
 
-// TODO: Should filter by tripId.
-export const getPendingBids = async () => {
+export const getPendingBids = async (tripId: Number) => {
   var bids: Map<string, string[]> = new Map<string, string[]>();
 
   // Get all bids.
   var evs = await window.nekobasu.getPastEvents('NewTripBid', {
+    filter: { tripId: tripId },
     fromBlock: 0,
     toBlock: 'latest',
   });
-
-  console.log(evs);
 
   evs.forEach((ev: any) => {
     const res = ev.returnValues;
@@ -137,23 +144,19 @@ export const getPendingBids = async () => {
     toBlock: 'latest',
   });
 
-  console.log(evs);
-
   evs.forEach((ev: any) => {
     const res = ev.returnValues;
     bids.delete(res.bidId);
   });
 
-  console.log(bids);
-
   return Array.from(bids.values());
 };
 
-// TODO: Should filter by tripId.
-export const getAcceptedBids = async () => {
+export const getAcceptedBids = async (tripId: Number) => {
   var bids: Map<string, string[]> = new Map<string, string[]>();
 
   let evs = await window.nekobasu.getPastEvents('SeatOccupied', {
+    filter: { tripId: tripId },
     fromBlock: 0,
     toBlock: 'latest',
   });

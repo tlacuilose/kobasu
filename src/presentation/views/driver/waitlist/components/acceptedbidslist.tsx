@@ -11,14 +11,13 @@ import { useEffect, useState } from 'react';
 import { getAcceptedBids } from '../../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../../data/web3/web3';
 
-const AcceptedBidsList = () => {
+const AcceptedBidsList = (props: { tripId: Number }) => {
   const [bids, setBids] = useState<any[]>([]);
 
   const getBids = async () => {
     try {
       await initDapp();
-      let results = await getAcceptedBids();
-      console.log(results);
+      let results = await getAcceptedBids(props.tripId);
       setBids(results);
     } catch (err: any) {
       console.log(err);
