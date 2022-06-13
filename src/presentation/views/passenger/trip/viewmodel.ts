@@ -17,18 +17,14 @@ const PassengerTripViewModel = () => {
   const checkIfPassengerHasBid = async () => {
     try {
       await initDapp();
-      // TODO: Why no bid?
       let bidId = await getActiveBid();
-      console.log(bidId);
       if (bidId === 0) {
         navigate('/passenger');
       } else {
         let bid = (await getBid(bidId)) as any;
-        console.log(bid);
         setBid(bid);
 
         let trip = (await getTrip(bid.tripId)) as any;
-        console.log(trip);
         setTrip(trip);
       }
     } catch (err: any) {

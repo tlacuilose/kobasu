@@ -28,11 +28,9 @@ const payableSendWrapper = async (methodCall: any, value: Number) => {
     methodCall
       .send({ from: window.account, value: value })
       .on('receipt', (receipt: any) => {
-        console.log(receipt);
         resolve(receipt);
       })
       .on('error', (error: any) => {
-        console.log(error);
         reject(error);
       });
   });
@@ -197,4 +195,30 @@ export const getAcceptedBids = async (tripId: Number) => {
   });
 
   return Array.from(bids.values());
+};
+
+// EVENTS
+
+export const subscribeNewTripOffer = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.NewTripOffer().on('data', onData).on('error', onError);
+};
+
+export const subscribeStartedTrip = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.StartedTrip().on('data', onData).on('error', onError);
+};
+
+export const subscribeCancelledTrip = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events
+    .CancelledTrip()
+    .on('data', onData)
+    .on('error', onError);
 };
