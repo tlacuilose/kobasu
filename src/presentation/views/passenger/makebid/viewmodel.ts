@@ -31,7 +31,6 @@ const PassengerMakeBidViewModel = () => {
   const callMakeBid = async () => {
     try {
       let receipt = await makeBid(tripId, amount);
-      console.log(receipt);
       navigate('/passenger/trip');
     } catch (err: any) {
       console.log(err);

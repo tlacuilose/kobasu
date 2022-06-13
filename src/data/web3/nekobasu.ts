@@ -222,3 +222,24 @@ export const subscribeCancelledTrip = (
     .on('data', onData)
     .on('error', onError);
 };
+
+export const subscribeNewTripBid = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.NewTripBid().on('data', onData).on('error', onError);
+};
+
+export const subscribeSeatOccupied = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.SeatOccupied().on('data', onData).on('error', onError);
+};
+
+export const subscribeWithdrawBid = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.WithdrawBid().on('data', onData).on('error', onError);
+};
