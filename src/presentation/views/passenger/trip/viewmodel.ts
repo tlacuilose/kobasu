@@ -5,6 +5,8 @@ import {
   getActiveBid,
   getBid,
   getTrip,
+  subscribeSeatOccupied,
+  subscribeStartedTrip,
   withdrawBid,
 } from '../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../data/web3/web3';
@@ -23,9 +25,51 @@ const PassengerTripViewModel = () => {
       } else {
         let bid = (await getBid(bidId)) as any;
         setBid(bid);
+        subscribeSeatOccupied(
+          (event) => {
+            console.log(event);
+            if (event.returnValues) {
+              let eventBid = event.returnValues;
+              console.log(eventBid.bidId);
+              console.log(bidId);
+              console.log(bid);
+              if (Number(eventBid.bidId) === bidId) {
+                console.log('setting bid');
+                setBid(eventBid);
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
 
-        let trip = (await getTrip(bid.tripId)) as any;
-        setTrip(trip);
+        let gotTrip = (await getTrip(bid.tripId)) as any;
+        console.log('---');
+        console.log(bid.tripId);
+        console.log(gotTrip);
+        setTrip(gotTrip);
+        subscribeStartedTrip(
+          (event) => {
+            console.log(event);
+            if (event.returnValues) {
+              let eventTrip = event.returnValues;
+              console.log(eventTrip.tripId);
+              console.log(bid.tripId);
+              console.log(bid);
+              console.log(trip);
+              if (eventTrip.tripId === bid.tripId) {
+                trip.started = true;
+                setTrip(trip);
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
       }
     } catch (err: any) {
       console.log(err);

@@ -51,7 +51,6 @@ const DriverHomeViewModel = () => {
       validateFormValues();
       let info = 'From: ' + formValues.from + ', to: ' + formValues.to;
       let receipt = await offerTrip(info, formValues.seats, formValues.cost);
-      console.log(receipt);
       navigate('/driver/waitlist');
     } catch (err: any) {
       // TODO: Catch TypeError mistake from library.
