@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Button,
   Paper,
@@ -8,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+
 import {
   acceptBid,
   getPendingBids,
@@ -42,7 +43,7 @@ const PendingBidsList = (props: { tripId: Number }) => {
         (event) => {
           if (event.returnValues) {
             let removedBid = bids.filter(
-              (it) => it.bidId != event.returnValues.bidId,
+              (it) => it.bidId !== event.returnValues.bidId,
             );
             setBids(removedBid);
           }
@@ -57,7 +58,7 @@ const PendingBidsList = (props: { tripId: Number }) => {
         (event) => {
           if (event.returnValues) {
             let removedBid = bids.filter(
-              (it) => it.bidId != event.returnValues.bidId,
+              (it) => it.bidId !== event.returnValues.bidId,
             );
             setBids(removedBid);
           }

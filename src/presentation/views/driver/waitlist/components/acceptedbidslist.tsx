@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Paper,
   Table,
@@ -7,7 +8,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+
 import {
   getAcceptedBids,
   subscribeSeatOccupied,

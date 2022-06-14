@@ -1,4 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   Paper,
@@ -9,7 +10,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+
 import {
   getAvailableOffers,
   subscribeCancelledTrip,
@@ -42,7 +43,7 @@ const PassengerOffersList = () => {
         (event) => {
           if (event.returnValues) {
             let removedOffers = offers.filter(
-              (it) => it.tripId != event.returnValues.tripId,
+              (it) => it.tripId !== event.returnValues.tripId,
             );
             setOffers(removedOffers);
           }
@@ -57,7 +58,7 @@ const PassengerOffersList = () => {
         (event) => {
           if (event.returnValues) {
             let removedOffers = offers.filter(
-              (it) => it.tripId != event.returnValues.tripId,
+              (it) => it.tripId !== event.returnValues.tripId,
             );
             setOffers(removedOffers);
           }

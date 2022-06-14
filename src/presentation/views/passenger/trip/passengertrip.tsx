@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { Button, Stack, Typography } from '@mui/material';
 
 import TitleWithLeftItem from '../../../global/components/titlewithleftitem';
 import TripStatus from './components/tripstatus';
 import PassengerTripViewModel from './viewmodel';
-import React, { useEffect } from 'react';
 
 const PassengerTripView = () => {
   const { bid, trip, checkIfPassengerHasBid, callWithdrawBid, callFinishBid } =

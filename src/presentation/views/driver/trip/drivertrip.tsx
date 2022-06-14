@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Stack, Typography } from '@mui/material';
 
 import TitleWithLeftItem from '../../../global/components/titlewithleftitem';
 import AcceptedBidsList from '../waitlist/components/acceptedbidslist';
-import { useState } from 'react';
 import {
   finishTrip,
   getActiveTrip,
