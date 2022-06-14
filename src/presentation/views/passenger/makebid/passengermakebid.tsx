@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Button,
   FormControl,
@@ -10,6 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import PassengerMakeBidViewModel from './viewmodel';
 
 const PassengerMakeBid = () => {
@@ -20,7 +21,7 @@ const PassengerMakeBid = () => {
   useEffect(() => {
     checkIfPassengerHasBid();
     getTripInfo(Number(tripId));
-  }, []);
+  }, [checkIfPassengerHasBid, getTripInfo, tripId]);
 
   return (
     <React.Fragment>

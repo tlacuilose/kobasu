@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Stack, Typography } from '@mui/material';
 
 import TitleWithLeftItem from '../../../global/components/titlewithleftitem';
 import AcceptedBidsList from '../waitlist/components/acceptedbidslist';
-import { useState } from 'react';
 import {
   finishTrip,
   getActiveTrip,
@@ -17,27 +16,6 @@ const DriverTripView = () => {
   const [trip, setTrip] = useState<any>(undefined);
   const [tripId, setTripId] = useState<Number>(0);
 
-  const checkIfDriverHasTrip = async () => {
-    try {
-      await initDapp();
-      let tripId = await getActiveTrip();
-      if (tripId === 0) {
-        navigate('/driver');
-      } else {
-        let trip = (await getTrip(tripId)) as any;
-        if (!trip.started) {
-          navigate('/driver/waitlist');
-        } else {
-          setTripId(tripId);
-          setTrip(trip);
-        }
-      }
-    } catch (err: any) {
-      console.log(err);
-      alert(err);
-    }
-  };
-
   const callFinishTrip = async () => {
     try {
       await finishTrip();
@@ -49,8 +27,29 @@ const DriverTripView = () => {
   };
 
   useEffect(() => {
+    const checkIfDriverHasTrip = async () => {
+      try {
+        await initDapp();
+        let tripId = await getActiveTrip();
+        if (tripId === 0) {
+          navigate('/driver');
+        } else {
+          let trip = (await getTrip(tripId)) as any;
+          if (!trip.started) {
+            navigate('/driver/waitlist');
+          } else {
+            setTripId(tripId);
+            setTrip(trip);
+          }
+        }
+      } catch (err: any) {
+        console.log(err);
+        alert(err);
+      }
+    };
+
     checkIfDriverHasTrip();
-  }, []);
+  }, [navigate]);
 
   return (
     <React.Fragment>

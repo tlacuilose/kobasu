@@ -1,11 +1,11 @@
 import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { getActiveBid, getTrip, makeBid } from '../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../data/web3/web3';
 
 const PassengerMakeBidViewModel = () => {
   const navigate = useNavigate();
-  const [trip, setTrip] = useState<any>(undefined);
   const [tripId, setTripId] = useState<Number>(0);
   const [amount, setAmount] = useState(0);
 
@@ -14,7 +14,6 @@ const PassengerMakeBidViewModel = () => {
       await initDapp();
       let trip = (await getTrip(tripId)) as any;
       setTripId(Number(tripId));
-      setTrip(trip);
       setAmount(Number(trip.cost));
     } catch (err: any) {
       console.log(err);
@@ -30,7 +29,7 @@ const PassengerMakeBidViewModel = () => {
 
   const callMakeBid = async () => {
     try {
-      let receipt = await makeBid(tripId, amount);
+      await makeBid(tripId, amount);
       navigate('/passenger/trip');
     } catch (err: any) {
       console.log(err);

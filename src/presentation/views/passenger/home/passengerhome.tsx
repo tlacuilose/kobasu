@@ -9,7 +9,7 @@ const PassengerHomeView = () => {
 
   useEffect(() => {
     checkIfPassengerHasBid();
-  }, []);
+  }, [checkIfPassengerHasBid]);
 
   return (
     <React.Fragment>
