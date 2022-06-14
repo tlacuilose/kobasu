@@ -35,10 +35,12 @@ export const initDapp = async () => {
 
 // TODO: Implement or remove
 // eslint-disable-next-line
+/*
 const removeEthListeners = () => {
   window.ethereum.removeListener('chainChanged', reloadWindow);
   window.ethereum.removeListener('accountsChanged', reloadWindow);
 };
+*/
 
 export const ethConnectAndAccounts = async () =>
   await window.ethereum.request({ method: 'eth_requestAccounts' });

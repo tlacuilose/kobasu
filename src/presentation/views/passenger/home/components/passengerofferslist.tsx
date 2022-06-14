@@ -96,6 +96,7 @@ const PassengerOffersList = () => {
             <TableCell align='center'>Seats</TableCell>
             <TableCell align='center'>Cost</TableCell>
             <TableCell align='center'>Info</TableCell>
+            <TableCell align='center'>Meeting Time</TableCell>
             <TableCell align='center'>Action</TableCell>
           </TableRow>
         </TableHead>
@@ -113,6 +114,7 @@ const PassengerOffersList = () => {
                 <TableCell align='right'>{offer.trip.seats}</TableCell>
                 <TableCell align='right'>{offer.cost}</TableCell>
                 <TableCell align='right'>{offer.trip.info}</TableCell>
+                <TableCell align='right'>{offer.trip.meetingtime}</TableCell>
                 <TableCell align='right'>
                   <Button onClick={() => goToMakeBid(offer.tripId)}>
                     Make bid
