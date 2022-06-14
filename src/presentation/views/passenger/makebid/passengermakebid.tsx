@@ -21,7 +21,7 @@ const PassengerMakeBid = () => {
   useEffect(() => {
     checkIfPassengerHasBid();
     getTripInfo(Number(tripId));
-  }, []);
+  }, [checkIfPassengerHasBid, getTripInfo, tripId]);
 
   return (
     <React.Fragment>

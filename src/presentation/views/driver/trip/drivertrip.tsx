@@ -16,27 +16,6 @@ const DriverTripView = () => {
   const [trip, setTrip] = useState<any>(undefined);
   const [tripId, setTripId] = useState<Number>(0);
 
-  const checkIfDriverHasTrip = async () => {
-    try {
-      await initDapp();
-      let tripId = await getActiveTrip();
-      if (tripId === 0) {
-        navigate('/driver');
-      } else {
-        let trip = (await getTrip(tripId)) as any;
-        if (!trip.started) {
-          navigate('/driver/waitlist');
-        } else {
-          setTripId(tripId);
-          setTrip(trip);
-        }
-      }
-    } catch (err: any) {
-      console.log(err);
-      alert(err);
-    }
-  };
-
   const callFinishTrip = async () => {
     try {
       await finishTrip();
@@ -48,8 +27,29 @@ const DriverTripView = () => {
   };
 
   useEffect(() => {
+    const checkIfDriverHasTrip = async () => {
+      try {
+        await initDapp();
+        let tripId = await getActiveTrip();
+        if (tripId === 0) {
+          navigate('/driver');
+        } else {
+          let trip = (await getTrip(tripId)) as any;
+          if (!trip.started) {
+            navigate('/driver/waitlist');
+          } else {
+            setTripId(tripId);
+            setTrip(trip);
+          }
+        }
+      } catch (err: any) {
+        console.log(err);
+        alert(err);
+      }
+    };
+
     checkIfDriverHasTrip();
-  }, []);
+  }, [navigate]);
 
   return (
     <React.Fragment>

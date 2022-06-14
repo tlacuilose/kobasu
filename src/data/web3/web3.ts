@@ -33,6 +33,8 @@ export const initDapp = async () => {
   }
 };
 
+// TODO: Implement or remove
+// eslint-disable-next-line
 const removeEthListeners = () => {
   window.ethereum.removeListener('chainChanged', reloadWindow);
   window.ethereum.removeListener('accountsChanged', reloadWindow);

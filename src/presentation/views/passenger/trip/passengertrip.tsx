@@ -11,7 +11,7 @@ const PassengerTripView = () => {
 
   useEffect(() => {
     checkIfPassengerHasBid();
-  }, []);
+  }, [checkIfPassengerHasBid]);
 
   const viewBidTitle = bid && trip ? 'Your bid on trip' + bid.tripId : '';
   const viewTripTitle = bid && trip ? 'Your trip' + bid.tripId + ' status' : '';

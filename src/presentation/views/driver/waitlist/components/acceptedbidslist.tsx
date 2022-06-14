@@ -18,31 +18,31 @@ import { initDapp } from '../../../../../data/web3/web3';
 const AcceptedBidsList = (props: { tripId: Number }) => {
   const [bids, setBids] = useState<any[]>([]);
 
-  const getBids = async () => {
-    try {
-      await initDapp();
-      let results = await getAcceptedBids(props.tripId);
-      setBids(results);
-      subscribeSeatOccupied(
-        (event) => {
-          if (event.returnValues) {
-            setBids([...bids, event.returnValues]);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
-    } catch (err: any) {
-      console.log(err);
-      alert('Could not get pending bids');
-    }
-  };
-
   useEffect(() => {
+    const getBids = async () => {
+      try {
+        await initDapp();
+        let results = await getAcceptedBids(props.tripId);
+        setBids(results);
+        subscribeSeatOccupied(
+          (event) => {
+            if (event.returnValues) {
+              setBids([...bids, event.returnValues]);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+      } catch (err: any) {
+        console.log(err);
+        alert('Could not get pending bids');
+      }
+    };
+
     getBids();
-  }, []);
+  }, [bids, props.tripId]);
 
   return (
     <TableContainer component={Paper}>

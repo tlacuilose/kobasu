@@ -22,65 +22,67 @@ import { initDapp } from '../../../../../data/web3/web3';
 const PassengerOffersList = () => {
   const navigate = useNavigate();
   const [offers, setOffers] = useState<any[]>([]);
-  const getOffers = async () => {
-    try {
-      await initDapp();
-      let result = await getAvailableOffers();
-      setOffers(result);
-      subscribeNewTripOffer(
-        (event) => {
-          if (event.returnValues) {
-            setOffers([...offers, event.returnValues]);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
-
-      subscribeStartedTrip(
-        (event) => {
-          if (event.returnValues) {
-            let removedOffers = offers.filter(
-              (it) => it.tripId !== event.returnValues.tripId,
-            );
-            setOffers(removedOffers);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
-
-      subscribeCancelledTrip(
-        (event) => {
-          if (event.returnValues) {
-            let removedOffers = offers.filter(
-              (it) => it.tripId !== event.returnValues.tripId,
-            );
-            setOffers(removedOffers);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
-    } catch (err: any) {
-      console.log(err);
-      alert('Could not get any offers.');
-    }
-  };
 
   const goToMakeBid = (tripId: string) => {
     navigate('/passenger/bid/' + tripId);
   };
 
   useEffect(() => {
+    const getOffers = async () => {
+      try {
+        await initDapp();
+        let result = await getAvailableOffers();
+        setOffers(result);
+        subscribeNewTripOffer(
+          (event) => {
+            if (event.returnValues) {
+              setOffers([...offers, event.returnValues]);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+
+        subscribeStartedTrip(
+          (event) => {
+            if (event.returnValues) {
+              let removedOffers = offers.filter(
+                (it) => it.tripId !== event.returnValues.tripId,
+              );
+              setOffers(removedOffers);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+
+        subscribeCancelledTrip(
+          (event) => {
+            if (event.returnValues) {
+              let removedOffers = offers.filter(
+                (it) => it.tripId !== event.returnValues.tripId,
+              );
+              setOffers(removedOffers);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+      } catch (err: any) {
+        console.log(err);
+        alert('Could not get any offers.');
+      }
+    };
+
     getOffers();
-  }, []);
+  }, [offers]);
+
   return (
     <TableContainer component={Paper}>
       <Table

@@ -12,7 +12,7 @@ const DriverWaitListView = () => {
 
   useEffect(() => {
     checkIfDriverHasTrip();
-  }, []);
+  }, [checkIfDriverHasTrip]);
 
   const tripTitle = 'Waitlist for trip: ' + tripId;
 
