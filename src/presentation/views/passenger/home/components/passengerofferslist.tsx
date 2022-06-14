@@ -10,7 +10,12 @@ import {
   TableRow,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getAvailableOffers } from '../../../../../data/web3/nekobasu';
+import {
+  getAvailableOffers,
+  subscribeCancelledTrip,
+  subscribeNewTripOffer,
+  subscribeStartedTrip,
+} from '../../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../../data/web3/web3';
 
 const PassengerOffersList = () => {
@@ -21,6 +26,47 @@ const PassengerOffersList = () => {
       await initDapp();
       let result = await getAvailableOffers();
       setOffers(result);
+      subscribeNewTripOffer(
+        (event) => {
+          if (event.returnValues) {
+            setOffers([...offers, event.returnValues]);
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert(error);
+        },
+      );
+
+      subscribeStartedTrip(
+        (event) => {
+          if (event.returnValues) {
+            let removedOffers = offers.filter(
+              (it) => it.tripId != event.returnValues.tripId,
+            );
+            setOffers(removedOffers);
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert(error);
+        },
+      );
+
+      subscribeCancelledTrip(
+        (event) => {
+          if (event.returnValues) {
+            let removedOffers = offers.filter(
+              (it) => it.tripId != event.returnValues.tripId,
+            );
+            setOffers(removedOffers);
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert(error);
+        },
+      );
     } catch (err: any) {
       console.log(err);
       alert('Could not get any offers.');

@@ -8,7 +8,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getAcceptedBids } from '../../../../../data/web3/nekobasu';
+import {
+  getAcceptedBids,
+  subscribeSeatOccupied,
+} from '../../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../../data/web3/web3';
 
 const AcceptedBidsList = (props: { tripId: Number }) => {
@@ -19,6 +22,17 @@ const AcceptedBidsList = (props: { tripId: Number }) => {
       await initDapp();
       let results = await getAcceptedBids(props.tripId);
       setBids(results);
+      subscribeSeatOccupied(
+        (event) => {
+          if (event.returnValues) {
+            setBids([...bids, event.returnValues]);
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert(error);
+        },
+      );
     } catch (err: any) {
       console.log(err);
       alert('Could not get pending bids');
