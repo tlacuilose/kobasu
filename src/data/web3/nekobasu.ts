@@ -60,10 +60,15 @@ export const getActiveBid = async () => {
   let bidId = await callWrapper(window.nekobasu.methods.getActiveBid());
   return Number(bidId);
 };
-export const offerTrip = async (info: string, seats: Number, cost: Number) => {
+export const offerTrip = async (
+  info: string,
+  meetingtime: string,
+  seats: Number,
+  cost: Number,
+) => {
   let tripFee = await getTripFee();
   return payableSendWrapper(
-    window.nekobasu.methods.offerTrip(info, seats, cost),
+    window.nekobasu.methods.offerTrip(info, meetingtime, seats, cost),
     tripFee,
   );
 };

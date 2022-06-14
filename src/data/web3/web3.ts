@@ -2,8 +2,6 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 const NekobasuAbi = require('./abi/Nekobasu.json');
 
-const contractAddress = '0x277fF6E5353e927116f6e872a0ebECE7da1249A4';
-
 declare global {
   interface Window {
     ethereum?: any;
@@ -25,17 +23,24 @@ export const initDapp = async () => {
     let accounts = await ethGetAccounts();
     window.account = accounts[0];
 
-    window.nekobasu = new window.web3!.eth.Contract(
+    const netId = await window.web3.eth.net.getId();
+    const deployedNetwork = NekobasuAbi.networks[netId];
+
+    window.nekobasu = new window.web3.eth.Contract(
       NekobasuAbi.abi as AbiItem[],
-      contractAddress,
+      deployedNetwork.address,
     ) as any;
   }
 };
 
+// TODO: Implement or remove
+// eslint-disable-next-line
+/*
 const removeEthListeners = () => {
   window.ethereum.removeListener('chainChanged', reloadWindow);
   window.ethereum.removeListener('accountsChanged', reloadWindow);
 };
+*/
 
 export const ethConnectAndAccounts = async () =>
   await window.ethereum.request({ method: 'eth_requestAccounts' });

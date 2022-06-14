@@ -10,6 +10,7 @@ const DriverHomeViewModel = () => {
   const [formValues, setFormValues] = useState({
     from: '',
     to: '',
+    meetingtime: '2022-06-17T19:00',
     seats: 0,
     cost: 0,
   });
@@ -50,7 +51,13 @@ const DriverHomeViewModel = () => {
     try {
       validateFormValues();
       let info = 'From: ' + formValues.from + ', to: ' + formValues.to;
-      let receipt = await offerTrip(info, formValues.seats, formValues.cost);
+      let receipt = await offerTrip(
+        info,
+        formValues.meetingtime,
+        formValues.seats,
+        formValues.cost,
+      );
+      console.log(receipt);
       navigate('/driver/waitlist');
     } catch (err: any) {
       // TODO: Catch TypeError mistake from library.

@@ -20,6 +20,7 @@ contract Nekobasu {
     struct Trip {
         address driver;
         string info;
+        string meetingtime;
         uint8 seats;
         uint cost;
         bool started;
@@ -61,7 +62,7 @@ contract Nekobasu {
         return passengerToBidId[msg.sender];
     }
 
-    function offerTrip(string calldata info, uint8 seats, uint cost) public payable {
+    function offerTrip(string calldata info, string calldata meetingtime, uint8 seats, uint cost) public payable {
         address driver = msg.sender;
 
         require (msg.value == tripFee, "cant pay trip fee");
@@ -69,7 +70,7 @@ contract Nekobasu {
         require (seats > 0, "needs seats");
         require (driverToTripId[driver] == 0, "driver has trip");
 
-        Trip memory trip = Trip(driver, info, seats, cost, false);
+        Trip memory trip = Trip(driver, info, meetingtime, seats, cost, false);
         trips.push(trip);
 
         uint tripId = trips.length;
@@ -225,12 +226,5 @@ contract Nekobasu {
 
         emit FinishedTrip(tripId);
     }
-
-    /*
-    TODO: Rules should be explicit on frontend, for driver and for passenger.
-    Example cant withdraw bid when it has been accepted.
-	Cancel incurss on a tripFee.
-    Cannot cancel a trip if it has passengers.
-    */
 
 }

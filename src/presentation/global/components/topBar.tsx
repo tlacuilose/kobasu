@@ -1,8 +1,8 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
 
 interface TopBarProps {
-  text: string;
-  children: JSX.Element;
+  text?: string;
+  children?: JSX.Element;
 }
 
 const TopBar = (props: TopBarProps) => (

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Button,
   Paper,
@@ -8,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+
 import {
   acceptBid,
   getPendingBids,
@@ -21,57 +22,61 @@ import { initDapp } from '../../../../../data/web3/web3';
 const PendingBidsList = (props: { tripId: Number }) => {
   const [bids, setBids] = useState<any[]>([]);
 
-  const getBids = async () => {
-    try {
-      await initDapp();
-      let results = await getPendingBids(props.tripId);
-      setBids(results);
-      subscribeNewTripBid(
-        (event) => {
-          if (event.returnValues) {
-            setBids([...bids, event.returnValues]);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
+  useEffect(() => {
+    const getBids = async () => {
+      try {
+        await initDapp();
+        let results = await getPendingBids(props.tripId);
+        setBids(results);
+        subscribeNewTripBid(
+          (event) => {
+            if (event.returnValues) {
+              setBids([...bids, event.returnValues]);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
 
-      subscribeSeatOccupied(
-        (event) => {
-          if (event.returnValues) {
-            let removedBid = bids.filter(
-              (it) => it.bidId != event.returnValues.bidId,
-            );
-            setBids(removedBid);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
+        subscribeSeatOccupied(
+          (event) => {
+            if (event.returnValues) {
+              let removedBid = bids.filter(
+                (it) => it.bidId !== event.returnValues.bidId,
+              );
+              setBids(removedBid);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
 
-      subscribeWithdrawBid(
-        (event) => {
-          if (event.returnValues) {
-            let removedBid = bids.filter(
-              (it) => it.bidId != event.returnValues.bidId,
-            );
-            setBids(removedBid);
-          }
-        },
-        (error) => {
-          console.log(error);
-          alert(error);
-        },
-      );
-    } catch (err: any) {
-      console.log(err);
-      alert('Could not get pending bids');
-    }
-  };
+        subscribeWithdrawBid(
+          (event) => {
+            if (event.returnValues) {
+              let removedBid = bids.filter(
+                (it) => it.bidId !== event.returnValues.bidId,
+              );
+              setBids(removedBid);
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+      } catch (err: any) {
+        console.log(err);
+        alert('Could not get pending bids');
+      }
+    };
+
+    getBids();
+  }, [bids, props.tripId]);
 
   const callAcceptBid = async (passenger: string) => {
     try {
@@ -81,10 +86,6 @@ const PendingBidsList = (props: { tripId: Number }) => {
       alert(err);
     }
   };
-
-  useEffect(() => {
-    getBids();
-  }, []);
 
   return (
     <TableContainer component={Paper}>

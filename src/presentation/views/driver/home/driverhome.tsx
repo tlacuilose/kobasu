@@ -20,6 +20,7 @@ const DriverHomeView = () => {
   const {
     from,
     to,
+    meetingtime,
     seats,
     cost,
     onChangeInput,
@@ -77,7 +78,9 @@ const DriverHomeView = () => {
                 <TextField
                   label='Appointment time'
                   type='datetime-local'
-                  defaultValue='2017-05-24T10:30'
+                  name='meetingtime'
+                  value={meetingtime}
+                  onChange={onChangeInput}
                   /* better use: https://mui.com/x/react-date-pickers/getting-started/ */
                   InputLabelProps={{
                     shrink: true,
