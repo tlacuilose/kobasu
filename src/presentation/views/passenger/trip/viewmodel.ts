@@ -27,15 +27,10 @@ const PassengerTripViewModel = () => {
         setBid(bid);
         subscribeSeatOccupied(
           (event) => {
-            console.log(event);
             if (event.returnValues) {
-              let eventBid = event.returnValues;
-              console.log(eventBid.bidId);
-              console.log(bidId);
-              console.log(bid);
-              if (Number(eventBid.bidId) === bidId) {
-                console.log('setting bid');
-                setBid(eventBid);
+              let eventValues = event.returnValues;
+              if (Number(eventValues.bidId) === bidId) {
+                setBid(eventValues.bid);
               }
             }
           },
@@ -45,23 +40,14 @@ const PassengerTripViewModel = () => {
           },
         );
 
-        let gotTrip = (await getTrip(bid.tripId)) as any;
-        console.log('---');
-        console.log(bid.tripId);
-        console.log(gotTrip);
+        var gotTrip = (await getTrip(bid.tripId)) as any;
         setTrip(gotTrip);
         subscribeStartedTrip(
           (event) => {
-            console.log(event);
             if (event.returnValues) {
-              let eventTrip = event.returnValues;
-              console.log(eventTrip.tripId);
-              console.log(bid.tripId);
-              console.log(bid);
-              console.log(trip);
-              if (eventTrip.tripId === bid.tripId) {
-                trip.started = true;
-                setTrip(trip);
+              if (event.returnValues.tripId === bid.tripId) {
+                var tripClone = Object.assign({}, gotTrip, { started: true });
+                setTrip(tripClone);
               }
             }
           },
