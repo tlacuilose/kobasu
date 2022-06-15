@@ -34,7 +34,9 @@ const PassengerMakeBidViewModel = () => {
     } catch (err: any) {
       console.log(err);
       if (err.message) {
-        alert(err.message);
+        alert(
+          'Could not make bid. Cannot make a bid to a trip with no available seats.',
+        );
       }
     }
   };
@@ -47,8 +49,7 @@ const PassengerMakeBidViewModel = () => {
         navigate('/passenger/trip');
       }
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not find if passenger has a bid.');
     }
   };
 

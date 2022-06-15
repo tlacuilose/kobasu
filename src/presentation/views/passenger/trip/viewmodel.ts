@@ -6,6 +6,8 @@ import {
   getActiveBid,
   getBid,
   getTrip,
+  subscribeCancelledTrip,
+  subscribeFinishedTrip,
   subscribeSeatOccupied,
   subscribeStartedTrip,
   withdrawBid,
@@ -57,10 +59,39 @@ const PassengerTripViewModel = () => {
             alert(error);
           },
         );
+
+        /*
+        subscribeFinishedTrip(
+          (event) => {
+            if (event.returnValues) {
+              if (event.returnValues.tripId === bid.tripId) {
+                alert('Your trip has finished.');
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+
+        subscribeCancelledTrip(
+          (event) => {
+            if (event.returnValues) {
+              if (event.returnValues.tripId === bid.tripId) {
+                alert('Your trip has been cancelled.');
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+        */
       }
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not get bid and trip info.');
     }
   };
 
@@ -69,8 +100,7 @@ const PassengerTripViewModel = () => {
       await withdrawBid();
       navigate('/passenger');
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not withdraw bid. Cannot withdraw an accepted bid.');
     }
   };
 
@@ -79,8 +109,7 @@ const PassengerTripViewModel = () => {
       await finishBid();
       navigate('/passenger');
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not finish a bid. Cannot finish a not accepted bid.');
     }
   };
 
