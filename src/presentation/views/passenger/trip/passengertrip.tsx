@@ -13,8 +13,9 @@ const PassengerTripView = () => {
     checkIfPassengerHasBid();
   }, [checkIfPassengerHasBid]);
 
-  const viewBidTitle = bid && trip ? 'Your bid on trip' + bid.tripId : '';
-  const viewTripTitle = bid && trip ? 'Your trip' + bid.tripId + ' status' : '';
+  const viewBidTitle = bid && trip ? 'Your bid on trip: ' + bid.tripId : '';
+  const viewTripTitle =
+    bid && trip ? 'Your trip ' + bid.tripId + ' status' : '';
 
   return (
     <React.Fragment>
@@ -40,7 +41,10 @@ const PassengerTripView = () => {
             {viewTripTitle}
           </Typography>
           <Typography variant='h6' component='div'>
-            {trip.info}
+            Info - {trip.info}
+          </Typography>
+          <Typography variant='h6' component='div'>
+            Meeting time - {trip.meetingtime}
           </Typography>
           <TripStatus status={trip.started ? 'Started' : 'Waiting for bids'} />
         </Stack>

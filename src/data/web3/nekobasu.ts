@@ -228,6 +228,13 @@ export const subscribeCancelledTrip = (
     .on('error', onError);
 };
 
+export const subscribeFinishedTrip = (
+  onData: (event: any) => void,
+  onError: (error: any) => void,
+) => {
+  window.nekobasu.events.FinishedTrip().on('data', onData).on('error', onError);
+};
+
 export const subscribeNewTripBid = (
   onData: (event: any) => void,
   onError: (error: any) => void,

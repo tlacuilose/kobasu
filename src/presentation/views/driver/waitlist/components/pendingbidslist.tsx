@@ -82,8 +82,9 @@ const PendingBidsList = (props: { tripId: Number }) => {
     try {
       await acceptBid(passenger);
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert(
+        'Could not accept bid. Cannot accept a bid that has been withdraw. Cannot accept more bids than seats.',
+      );
     }
   };
 

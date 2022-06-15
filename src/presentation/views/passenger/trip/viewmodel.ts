@@ -6,6 +6,10 @@ import {
   getActiveBid,
   getBid,
   getTrip,
+  subscribeCancelledTrip,
+  subscribeFinishedTrip,
+  subscribeSeatOccupied,
+  subscribeStartedTrip,
   withdrawBid,
 } from '../../../../data/web3/nekobasu';
 import { initDapp } from '../../../../data/web3/web3';
@@ -24,13 +28,70 @@ const PassengerTripViewModel = () => {
       } else {
         let bid = (await getBid(bidId)) as any;
         setBid(bid);
+        subscribeSeatOccupied(
+          (event) => {
+            if (event.returnValues) {
+              let eventValues = event.returnValues;
+              if (Number(eventValues.bidId) === bidId) {
+                setBid(eventValues.bid);
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
 
-        let trip = (await getTrip(bid.tripId)) as any;
-        setTrip(trip);
+        var gotTrip = (await getTrip(bid.tripId)) as any;
+        setTrip(gotTrip);
+        subscribeStartedTrip(
+          (event) => {
+            if (event.returnValues) {
+              if (event.returnValues.tripId === bid.tripId) {
+                var tripClone = Object.assign({}, gotTrip, { started: true });
+                setTrip(tripClone);
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+
+        /*
+        subscribeFinishedTrip(
+          (event) => {
+            if (event.returnValues) {
+              if (event.returnValues.tripId === bid.tripId) {
+                alert('Your trip has finished.');
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+
+        subscribeCancelledTrip(
+          (event) => {
+            if (event.returnValues) {
+              if (event.returnValues.tripId === bid.tripId) {
+                alert('Your trip has been cancelled.');
+              }
+            }
+          },
+          (error) => {
+            console.log(error);
+            alert(error);
+          },
+        );
+        */
       }
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not get bid and trip info.');
     }
   };
 
@@ -39,8 +100,7 @@ const PassengerTripViewModel = () => {
       await withdrawBid();
       navigate('/passenger');
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not withdraw bid. Cannot withdraw an accepted bid.');
     }
   };
 
@@ -49,8 +109,7 @@ const PassengerTripViewModel = () => {
       await finishBid();
       navigate('/passenger');
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not finish a bid. Cannot finish a not accepted bid.');
     }
   };
 

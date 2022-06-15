@@ -28,7 +28,10 @@ const DriverWaitListView = () => {
             {tripTitle}
           </Typography>
           <Typography variant='h6' component='div'>
-            {trip.info}
+            Info: {trip.info}
+          </Typography>
+          <Typography variant='h6' component='div'>
+            Meeting time: {trip.meetingtime}
           </Typography>
           <Stack spacing={2} sx={{ marginTop: '16px' }}>
             <TitleWithLeftItem titleVariant='h5' title='Received bids.'>

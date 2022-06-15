@@ -19,7 +19,9 @@ const DriverWaitListViewModel = () => {
       await cancelTrip();
       navigate('/driver');
     } catch (err: any) {
-      alert(err);
+      alert(
+        'Error cancelling trip. Cannot cancel if a bid already has been accepted.',
+      );
     }
   };
 
@@ -28,7 +30,7 @@ const DriverWaitListViewModel = () => {
       await startTrip();
       navigate('/driver/trip');
     } catch (err: any) {
-      alert(err);
+      alert('Error starting trip. Cannot start without accepting a bid.');
     }
   };
 
@@ -48,8 +50,7 @@ const DriverWaitListViewModel = () => {
         }
       }
     } catch (err: any) {
-      console.log(err);
-      alert(err);
+      alert('Could not check wether the driver has a trip.');
     }
   };
 
